@@ -1,1 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MiniTools</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
 
+  <!-- BACKGROUND FILIGREE -->
+  <div class="bg-filigree">
+    <svg class="filigree-svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <pattern id="filigree" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+          <!-- Outer circle -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,182,193,0.07)" stroke-width="0.5"/>
+          <circle cx="100" cy="100" r="60" fill="none" stroke="rgba(255,182,193,0.05)" stroke-width="0.5"/>
+          <circle cx="100" cy="100" r="40" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <!-- Cross lines -->
+          <line x1="100" y1="20" x2="100" y2="180" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <line x1="20" y1="100" x2="180" y2="100" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <!-- Diagonal lines -->
+          <line x1="43" y1="43" x2="157" y2="157" stroke="rgba(255,182,193,0.03)" stroke-width="0.5"/>
+          <line x1="157" y1="43" x2="43" y2="157" stroke="rgba(255,182,193,0.03)" stroke-width="0.5"/>
+          <!-- Diamond -->
+          <polygon points="100,25 175,100 100,175 25,100" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <!-- Small corner flourishes -->
+          <circle cx="100" cy="20" r="3" fill="none" stroke="rgba(255,182,193,0.08)" stroke-width="0.5"/>
+          <circle cx="100" cy="180" r="3" fill="none" stroke="rgba(255,182,193,0.08)" stroke-width="0.5"/>
+          <circle cx="20" cy="100" r="3" fill="none" stroke="rgba(255,182,193,0.08)" stroke-width="0.5"/>
+          <circle cx="180" cy="100" r="3" fill="none" stroke="rgba(255,182,193,0.08)" stroke-width="0.5"/>
+          <!-- Petal shapes -->
+          <ellipse cx="100" cy="60" rx="8" ry="20" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <ellipse cx="100" cy="140" rx="8" ry="20" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <ellipse cx="60" cy="100" rx="20" ry="8" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+          <ellipse cx="140" cy="100" rx="20" ry="8" fill="none" stroke="rgba(255,182,193,0.04)" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#filigree)"/>
+    </svg>
+  </div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-ornament">✦</div>
+    <h1 class="site-title">MiniTools</h1>
+    <p class="site-subtitle">A curated collection of tiny utilities</p>
+    <div class="header-ornament">✦</div>
+  </header>
+
+  <!-- NAV TABS -->
+  <nav class="tool-nav">
+    <button class="nav-btn active" data-tool="color-picker">🎨 Color</button>
+    <button class="nav-btn" data-tool="pomodoro">⏱ Pomodoro</button>
+    <button class="nav-btn" data-tool="word-counter">📝 Words</button>
+    <button class="nav-btn" data-tool="calculator">🔢 Calc</button>
+    <button class="nav-btn" data-tool="random-gen">🎲 Random</button>
+    <button class="nav-btn" data-tool="password-gen">🔐 Password</button>
+    <button class="nav-btn" data-tool="unit-converter">📏 Units</button>
+    <button class="nav-btn" data-tool="gradient-gen">🌈 Gradient</button>
+    <button class="nav-btn" data-tool="age-calc">📅 Age</button>
+    <button class="nav-btn" data-tool="metronome">🎵 Metro & Tune</button>
+  </nav>
+
+  <!-- TOOL PANELS -->
+  <main class="tool-container">
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- COLOR PICKER -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel active" id="color-picker">
+      <div class="panel-header">
+        <h2>Color Picker</h2>
+        <p>Convert and explore colors</p>
+      </div>
+      <div class="panel-body">
+        <div class="color-preview-box" id="colorPreview"></div>
+        <div class="input-row">
+          <label>Pick a Color</label>
+          <input type="color" id="colorInput" value="#b76e79"/>
+        </div>
+        <div class="output-grid">
+          <div class="output-card">
+            <span class="output-label">HEX</span>
+            <span class="output-value" id="hexOut">#b76e79</span>
+            <button class="copy-btn" data-target="hexOut">Copy</button>
+          </div>
+          <div class="output-card">
+            <span class="output-label">RGB</span>
+            <span class="output-value" id="rgbOut">rgb(183, 110, 121)</span>
+            <button class="copy-btn" data-target="rgbOut">Copy</button>
+          </div>
+          <div class="output-card">
+            <span class="output-label">HSL</span>
+            <span class="output-value" id="hslOut">hsl(350, 30%, 57%)</span>
+            <button class="copy-btn" data-target="hslOut">Copy</button>
+          </div>
+        </div>
+        <div class="palette-section">
+          <h3>Generated Palette</h3>
+          <div class="palette-row" id="paletteRow"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- POMODORO -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="pomodoro">
+      <div class="panel-header">
+        <h2>Pomodoro Timer</h2>
+        <p>Stay focused, rest well</p>
+      </div>
+      <div class="panel-body center-col">
+        <div class="pom-mode-btns">
+          <button class="pom-mode active" data-mins="25">Focus</button>
+          <button class="pom-mode" data-mins="5">Short Break</button>
+          <button class="pom-mode" data-mins="15">Long Break</button>
+        </div>
+        <div class="clock-ring">
+          <svg viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" class="ring-bg"/>
+            <circle cx="100" cy="100" r="90" class="ring-progress" id="pomRing"/>
+          </svg>
+          <div class="clock-display" id="pomDisplay">25:00</div>
+        </div>
+        <div class="pom-controls">
+          <button class="tool-btn" id="pomStart">Start</button>
+          <button class="tool-btn secondary" id="pomReset">Reset</button>
+        </div>
+        <div class="pom-sessions">Sessions completed: <span id="pomSessions">0</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- WORD COUNTER -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="word-counter">
+      <div class="panel-header">
+        <h2>Word Counter</h2>
+        <p>Analyze your text</p>
+      </div>
+      <div class="panel-body">
+        <textarea class="tool-textarea" id="wordInput" placeholder="Start typing or paste your text here..."></textarea>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num" id="wordCount">0</span>
+            <span class="stat-label">Words</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="charCount">0</span>
+            <span class="stat-label">Characters</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="charNoSpace">0</span>
+            <span class="stat-label">No Spaces</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="sentenceCount">0</span>
+            <span class="stat-label">Sentences</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="paraCount">0</span>
+            <span class="stat-label">Paragraphs</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="readTime">0</span>
+            <span class="stat-label">Min Read</span>
+          </div>
+        </div>
+        <button class="tool-btn secondary" id="clearText">Clear</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- CALCULATOR -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="calculator">
+      <div class="panel-header">
+        <h2>Calculator</h2>
+        <p>Clean and simple</p>
+      </div>
+      <div class="panel-body center-col">
+        <div class="calc-wrapper">
+          <div class="calc-display" id="calcDisplay">0</div>
+          <div class="calc-grid">
+            <button class="calc-btn span-two" data-val="clear">AC</button>
+            <button class="calc-btn" data-val="backspace">⌫</button>
+            <button class="calc-btn op" data-val="/">÷</button>
+            <button class="calc-btn" data-val="7">7</button>
+            <button class="calc-btn" data-val="8">8</button>
+            <button class="calc-btn" data-val="9">9</button>
+            <button class="calc-btn op" data-val="*">×</button>
+            <button class="calc-btn" data-val="4">4</button>
+            <button class="calc-btn" data-val="5">5</button>
+            <button class="calc-btn" data-val="6">6</button>
+            <button class="calc-btn op" data-val="-">−</button>
+            <button class="calc-btn" data-val="1">1</button>
+            <button class="calc-btn" data-val="2">2</button>
+            <button class="calc-btn" data-val="3">3</button>
+            <button class="calc-btn op" data-val="+">+</button>
+            <button class="calc-btn" data-val="0">0</button>
+            <button class="calc-btn" data-val=".">.</button>
+            <button class="calc-btn op" data-val="%">%</button>
+            <button class="calc-btn equals" data-val="=">=</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- RANDOM GENERATOR -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="random-gen">
+      <div class="panel-header">
+        <h2>Random Generator</h2>
+        <p>Let fate decide</p>
+      </div>
+      <div class="panel-body">
+        <div class="rand-tabs">
+          <button class="rand-tab active" data-rand="number">Number</button>
+          <button class="rand-tab" data-rand="name">Name</button>
+          <button class="rand-tab" data-rand="decision">Decision</button>
+        </div>
+
+        <div class="rand-panel active" id="rand-number">
+          <div class="input-row">
+            <label>Min</label>
+            <input type="number" id="randMin" value="1"/>
+          </div>
+          <div class="input-row">
+            <label>Max</label>
+            <input type="number" id="randMax" value="100"/>
+          </div>
+        </div>
+
+        <div class="rand-panel" id="rand-name">
+          <div class="input-row">
+            <label>Gender</label>
+            <select id="nameGender">
+              <option value="any">Any</option>
+              <option value="fem">Feminine</option>
+              <option value="masc">Masculine</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rand-panel" id="rand-decision">
+          <div class="input-row">
+            <label>Option 1</label>
+            <input type="text" id="dec1" placeholder="e.g. Pizza"/>
+          </div>
+          <div class="input-row">
+            <label>Option 2</label>
+            <input type="text" id="dec2" placeholder="e.g. Sushi"/>
+          </div>
+          <div class="input-row">
+            <label>Option 3</label>
+            <input type="text" id="dec3" placeholder="Optional"/>
+          </div>
+        </div>
+
+        <button class="tool-btn" id="generateRand">Generate ✦</button>
+        <div class="rand-result" id="randResult">—</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- PASSWORD GENERATOR -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="password-gen">
+      <div class="panel-header">
+        <h2>Password Generator</h2>
+        <p>Strong and secure</p>
+      </div>
+      <div class="panel-body">
+        <div class="pass-display">
+          <span id="passOutput">Click generate</span>
+          <button class="icon-btn" id="copyPass" title="Copy"><i class="fas fa-copy"></i></button>
+        </div>
+        <div class="strength-bar-wrap">
+          <div class="strength-bar" id="strengthBar"></div>
+        </div>
+        <span class="strength-label" id="strengthLabel">—</span>
+        <div class="input-row">
+          <label>Length: <span id="passLenLabel">16</span></label>
+          <input type="range" id="passLength" min="6" max="64" value="16"/>
+        </div>
+        <div class="checkbox-grid">
+          <label class="check-label"><input type="checkbox" id="inclUpper" checked/> Uppercase</label>
+          <label class="check-label"><input type="checkbox" id="inclLower" checked/> Lowercase</label>
+          <label class="check-label"><input type="checkbox" id="inclNums" checked/> Numbers</label>
+          <label class="check-label"><input type="checkbox" id="inclSyms" checked/> Symbols</label>
+        </div>
+        <button class="tool-btn" id="generatePass">Generate ✦</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- UNIT CONVERTER -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="unit-converter">
+      <div class="panel-header">
+        <h2>Unit Converter</h2>
+        <p>Length, weight, temperature</p>
+      </div>
+      <div class="panel-body">
+        <div class="input-row">
+          <label>Category</label>
+          <select id="unitCategory">
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="temp">Temperature</option>
+          </select>
+        </div>
+        <div class="convert-row">
+          <div class="convert-side">
+            <input type="number" id="unitInput" placeholder="0"/>
+            <select id="unitFrom"></select>
+          </div>
+          <div class="convert-arrow">→</div>
+          <div class="convert-side">
+            <div class="unit-result" id="unitResult">0</div>
+            <select id="unitTo"></select>
+          </div>
+        </div>
+        <button class="tool-btn" id="convertUnit">Convert ✦</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- GRADIENT GENERATOR -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="gradient-gen">
+      <div class="panel-header">
+        <h2>Gradient Generator</h2>
+        <p>Design beautiful gradients</p>
+      </div>
+      <div class="panel-body">
+        <div class="gradient-preview" id="gradientPreview"></div>
+        <div class="input-row">
+          <label>Type</label>
+          <select id="gradType">
+            <option value="linear">Linear</option>
+            <option value="radial">Radial</option>
+          </select>
+        </div>
+        <div class="input-row" id="angleRow">
+          <label>Angle: <span id="angleLabel">135</span>°</label>
+          <input type="range" id="gradAngle" min="0" max="360" value="135"/>
+        </div>
+        <div class="color-stops" id="colorStops">
+          <div class="stop-row">
+            <input type="color" class="stop-color" value="#1a0533"/>
+            <input type="range" class="stop-pos" min="0" max="100" value="0"/>
+            <span class="stop-pos-label">0%</span>
+          </div>
+          <div class="stop-row">
+            <input type="color" class="stop-color" value="#b76e79"/>
+            <input type="range" class="stop-pos" min="0" max="100" value="50"/>
+            <span class="stop-pos-label">50%</span>
+          </div>
+          <div class="stop-row">
+            <input type="color" class="stop-color" value="#2d1b4e"/>
+            <input type="range" class="stop-pos" min="0" max="100" value="100"/>
+            <span class="stop-pos-label">100%</span>
+          </div>
+        </div>
+        <button class="tool-btn secondary" id="addStop">+ Add Stop</button>
+        <div class="output-card full-width">
+          <span class="output-label">CSS</span>
+          <span class="output-value small" id="gradientCSS"></span>
+          <button class="copy-btn" data-target="gradientCSS">Copy</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- AGE CALCULATOR -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="age-calc">
+      <div class="panel-header">
+        <h2>Age Calculator</h2>
+        <p>Down to the second</p>
+      </div>
+      <div class="panel-body center-col">
+        <div class="input-row">
+          <label>Your Birthday</label>
+          <input type="date" id="birthdayInput"/>
+        </div>
+        <button class="tool-btn" id="calcAge">Calculate ✦</button>
+        <div class="age-results" id="ageResults">
+          <div class="age-big" id="ageYears">—</div>
+          <div class="age-sub">years old</div>
+          <div class="age-detail-grid">
+            <div class="age-detail-card">
+              <span id="ageMonths">—</span>
+              <small>months</small>
+            </div>
+            <div class="age-detail-card">
+              <span id="ageDays">—</span>
+              <small>days</small>
+            </div>
+            <div class="age-detail-card">
+              <span id="ageHours">—</span>
+              <small>hours</small>
+            </div>
+            <div class="age-detail-card">
+              <span id="ageSeconds">—</span>
+              <small>seconds</small>
+            </div>
+          </div>
+          <div class="next-bday" id="nextBday"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- METRONOME + TUNER -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="metronome">
+      <div class="panel-header">
+        <h2>Metronome & Tuner</h2>
+        <p>Stay in time, stay in tune</p>
+      </div>
+      <div class="panel-body">
+
+        <!-- METRONOME -->
+        <div class="sub-section">
+          <h3 class="sub-title">✦ Metronome</h3>
+          <div class="metro-visual">
+            <div class="pendulum-wrap">
+              <div class="pendulum" id="pendulum">
+                <div class="pendulum-rod"></div>
+                <div class="pendulum-ball"></div>
+              </div>
+            </div>
+            <div class="beat-dots" id="beatDots"></div>
+          </div>
+          <div class="bpm-display" id="bpmDisplay">120 BPM</div>
+          <input type="range" id="bpmSlider" min="20" max="300" value="120"/>
+          <div class="input-row">
+            <label>Time Signature</label>
+            <select id="timeSig">
+              <option value="4">4/4</option>
+              <option value="3">3/4</option>
+              <option value="6">6/8</option>
+              <option value="2">2/4</option>
+            </select>
+          </div>
+          <div class="metro-controls">
+            <button class="tool-btn" id="metroStart">Start</button>
+            <button class="tool-btn secondary" id="metroStop">Stop</button>
+            <button class="tool-btn secondary" id="tapTempo">Tap Tempo</button>
+          </div>
+        </div>
+
+        <!-- TUNER -->
+        <div class="sub-section">
+          <h3 class="sub-title">✦ Chromatic Tuner</h3>
+          <div class="tuner-display">
+            <div class="tuner-note" id="tunerNote">—</div>
+            <div class="tuner-needle-wrap">
+              <div class="tuner-scale">
+                <span>♭</span>
+                <span>|</span>
+                <span>♯</span>
+              </div>
+              <div class="needle-track">
+                <div class="needle" id="tunerNeedle"></div>
+                <div class="needle-center"></div>
+              </div>
+            </div>
+            <div class="tuner-cents" id="tunerCents">0 cents</div>
+            <div class="tuner-freq" id="tunerFreq">— Hz</div>
+          </div>
+          <button class="tool-btn" id="tunerStart">🎤 Start Tuner</button>
+          <button class="tool-btn secondary" id="tunerStop">Stop</button>
+          <p class="tuner-note-text">Allow microphone access when prompted</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-ornament">✦ ✦ ✦</div>
+    <p>MiniTools &mdash; handcrafted with care</p>
+    <div class="socials-placeholder">
+      <!-- Socials coming soon -->
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
