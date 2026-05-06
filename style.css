@@ -618,6 +618,7 @@ select option {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
+  overflow: visible;
 }
 
 .ring-bg {
@@ -1511,6 +1512,7 @@ select option {
   position: relative;
   width: clamp(220px, 35vmin, 320px);
   height: clamp(220px, 35vmin, 320px);
+  overflow: visible;
 }
 
 .fs-clock-ring svg {
@@ -1518,6 +1520,7 @@ select option {
   height: 100%;
   transform: rotate(-90deg);
   filter: drop-shadow(0 0 20px rgba(183, 110, 121, 0.3));
+  overflow: visible;
 }
 
 .fs-clock-display {
