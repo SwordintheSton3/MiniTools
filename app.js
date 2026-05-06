@@ -125,9 +125,15 @@ const svgEl = document.querySelector('.clock-ring svg');
 const defs  = document.createElementNS('http://www.w3.org/2000/svg','defs');
 const grad  = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
 grad.id = 'ringGrad';
+grad.setAttribute('gradientUnits', 'userSpaceOnUse');
+grad.setAttribute('x1', '100');
+grad.setAttribute('y1', '0');
+grad.setAttribute('x2', '100');
+grad.setAttribute('y2', '200');
 grad.innerHTML = `
-  <stop offset="0%"   stop-color="#9b7fc7"/>
-  <stop offset="50%"  stop-color="#b76e79"/>
+  <stop offset="0%"   stop-color="#c9a96e"/>
+  <stop offset="33%"  stop-color="#b76e79"/>
+  <stop offset="66%"  stop-color="#9b7fc7"/>
   <stop offset="100%" stop-color="#c9a96e"/>
 `;
 defs.appendChild(grad);
@@ -917,23 +923,6 @@ document.getElementById('pomFullscreen').addEventListener('click', () => {
   }
 });
 
-// // ── Close fullscreen ──
-// function closeFs() {
-//   stopFs();
-//   fsOverlay.classList.remove('active');
-//   document.body.style.overflow = '';
-//   stopParticles();
-//   if (document.fullscreenElement) {
-//     document.exitFullscreen().catch(() => {});
-//   }
-// }
-
-// fsExit.addEventListener('click', closeFs);
-
-// document.addEventListener('keydown', e => {
-//   if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
-// });
-
 // ═══════════════════════════════════════
 // PARTICLE SYSTEM
 // ═══════════════════════════════════════
@@ -1119,18 +1108,19 @@ updateFsDisplay();
 // ═══════════════════════════════════════
 // EXIT BUTTON PROXIMITY REVEAL
 // ═══════════════════════════════════════
-const fsExitBtn = document.getElementById('fsExit');
 const PROXIMITY = 150;
 
 document.addEventListener('mousemove', e => {
   if (!fsOverlay.classList.contains('active')) return;
 
-  // Button is fixed at top-right
-  const btnX = window.innerWidth  - 21; // center of button (42px wide, 1.5rem ≈ 24px from edge)
-  const btnY = 24 + 21;                 // 1.5rem from top + half height
+  // Button is fixed: top-right corner of the SCREEN
+  // right: 1.5rem = ~24px, so center is at (windowWidth - 24 - 21)
+  // top: 1.5rem = ~24px, so center is at (24 + 21)
+  const btnCenterX = window.innerWidth - 45;
+  const btnCenterY = 45;
 
-  const dx   = e.clientX - btnX;
-  const dy   = e.clientY - btnY;
+  const dx   = e.clientX - btnCenterX;
+  const dy   = e.clientY - btnCenterY;
   const dist = Math.sqrt(dx * dx + dy * dy);
 
   if (dist < PROXIMITY) {
@@ -1139,15 +1129,3 @@ document.addEventListener('mousemove', e => {
     fsExitBtn.classList.remove('visible');
   }
 });
-
-// Also hide it when overlay closes
-function closeFs() {
-  stopFs();
-  fsOverlay.classList.remove('active');
-  fsExitBtn.classList.remove('visible');
-  document.body.style.overflow = '';
-  stopParticles();
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {});
-  }
-}
