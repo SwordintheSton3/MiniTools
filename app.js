@@ -788,3 +788,354 @@ document.getElementById('tunerStop').addEventListener('click', () => {
   document.getElementById('tunerCents').textContent = '0 cents';
   document.getElementById('tunerNeedle').style.left = '50%';
 });
+
+// ═══════════════════════════════════════
+// FULLSCREEN POMODORO
+// ═══════════════════════════════════════
+
+// ─── Sync state between main and fullscreen ───
+// The fullscreen timer runs its OWN interval but
+// shares pomSesCount and mirrors the main display
+
+let fsSeconds  = pomTotal;
+let fsTotal    = pomTotal;
+let fsRunning  = false;
+let fsInterval = null;
+let fsSesCount = 0;
+let fsCustomMode = false;
+
+const fsOverlay  = document.getElementById('fsOverlay');
+const fsDisplay  = document.getElementById('fsDisplay');
+const fsRing     = document.getElementById('fsRing');
+const fsStart    = document.getElementById('fsStart');
+const fsReset    = document.getElementById('fsReset');
+const fsExit     = document.getElementById('fsExit');
+const fsSessions = document.getElementById('fsSessions');
+const fsCustomRow = document.getElementById('fsCustomRow');
+const fsModeBtns  = document.querySelectorAll('.fs-mode-btn');
+
+const fsCircumference = 2 * Math.PI * 90;
+fsRing.setAttribute('stroke', 'url(#fsRingGrad)');
+
+function updateFsDisplay() {
+  if (isNaN(fsSeconds) || fsSeconds < 0) fsSeconds = 0;
+  if (isNaN(fsTotal)   || fsTotal <= 0)  fsTotal   = fsSeconds || 1;
+  fsDisplay.textContent = formatTime(fsSeconds);
+  fsDisplay.style.fontSize = fsSeconds >= 3600 ? 'clamp(1.8rem, 5vmin, 3rem)' : 'clamp(2.5rem, 8vmin, 4.5rem)';
+  const progress = fsTotal > 0 ? fsSeconds / fsTotal : 1;
+  fsRing.style.strokeDasharray  = fsCircumference;
+  fsRing.style.strokeDashoffset = fsCircumference * (1 - progress);
+}
+
+function stopFs() {
+  clearInterval(fsInterval);
+  fsRunning = false;
+  fsStart.textContent = 'Start';
+}
+
+function resetFs() {
+  stopFs();
+  fsSeconds = fsTotal;
+  updateFsDisplay();
+}
+
+// Mode buttons
+fsModeBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    fsModeBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (btn.dataset.mins === 'custom') {
+      fsCustomMode = true;
+      fsCustomRow.classList.add('visible');
+    } else {
+      fsCustomMode = false;
+      fsCustomRow.classList.remove('visible');
+      fsTotal   = parseInt(btn.dataset.mins) * 60;
+      fsSeconds = fsTotal;
+      resetFs();
+    }
+  });
+});
+
+// Set custom time
+document.getElementById('fsSetCustom').addEventListener('click', () => {
+  const h = parseInt(document.getElementById('fsCustomHours').value) || 0;
+  const m = parseInt(document.getElementById('fsCustomMins').value)  || 0;
+  const s = parseInt(document.getElementById('fsCustomSecs').value)  || 0;
+  const total = h * 3600 + m * 60 + s;
+  if (total <= 0) return;
+  fsTotal   = total;
+  fsSeconds = total;
+  resetFs();
+});
+
+// Start / Pause
+fsStart.addEventListener('click', () => {
+  if (fsRunning) {
+    stopFs();
+    fsStart.textContent = 'Resume';
+  } else {
+    if (fsSeconds <= 0) return;
+    fsRunning = true;
+    fsStart.textContent = 'Pause';
+    fsInterval = setInterval(() => {
+      fsSeconds--;
+      updateFsDisplay();
+      if (fsSeconds <= 0) {
+        stopFs();
+        fsStart.textContent = 'Start';
+        fsSesCount++;
+        fsSessions.textContent = fsSesCount;
+        playDoneSound();
+        // Flash the ring
+        fsRing.style.filter = 'drop-shadow(0 0 30px rgba(183,110,121,0.9))';
+        setTimeout(() => {
+          fsRing.style.filter = '';
+        }, 1000);
+      }
+    }, 1000);
+  }
+});
+
+// Reset
+fsReset.addEventListener('click', resetFs);
+
+// ─── Open fullscreen ───
+document.getElementById('pomFullscreen').addEventListener('click', () => {
+  // Sync current main timer state into fullscreen
+  fsTotal   = pomTotal;
+  fsSeconds = pomSeconds;
+  fsSesCount = pomSesCount;
+  fsSessions.textContent = fsSesCount;
+  updateFsDisplay();
+  fsOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  startParticles();
+  // Try native fullscreen API
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+});
+
+// ─── Close fullscreen ───
+function closeFs() {
+  stopFs();
+  fsOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+  stopParticles();
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+fsExit.addEventListener('click', closeFs);
+
+// Escape key closes it too
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
+});
+
+// ═══════════════════════════════════════
+// PARTICLE SYSTEM
+// ═══════════════════════════════════════
+const canvas = document.getElementById('fsCanvas');
+const ctx2d  = canvas.getContext('2d');
+let particles    = [];
+let animFrame    = null;
+let particleRunning = false;
+
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', () => {
+  if (particleRunning) resizeCanvas();
+});
+
+// Particle config
+const PARTICLE_COUNT = 80;
+const COLORS = [
+  'rgba(183, 110, 121,',  // rose
+  'rgba(155, 127, 199,',  // lavender
+  'rgba(201, 169, 110,',  // gold
+  'rgba(232, 196, 196,',  // soft pink
+  'rgba(255, 255, 255,',  // white
+];
+
+class Particle {
+  constructor() {
+    this.reset(true);
+  }
+
+  reset(randomY = false) {
+    this.x     = Math.random() * canvas.width;
+    this.y     = randomY ? Math.random() * canvas.height : canvas.height + 10;
+    this.size  = Math.random() * 2.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.4;
+    this.speedY = -(Math.random() * 0.6 + 0.2);
+    this.opacity = Math.random() * 0.6 + 0.1;
+    this.fadeSpeed = Math.random() * 0.003 + 0.001;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.twinkle = Math.random() * Math.PI * 2;
+    this.twinkleSpeed = Math.random() * 0.03 + 0.01;
+    // Some particles are little diamond shapes
+    this.shape = Math.random() > 0.85 ? 'diamond' : 'circle';
+    this.pulse  = 0;
+  }
+
+  update() {
+    this.x       += this.speedX;
+    this.y       += this.speedY;
+    this.twinkle += this.twinkleSpeed;
+    // Gentle horizontal drift
+    this.speedX += (Math.random() - 0.5) * 0.01;
+    this.speedX  = Math.max(-0.5, Math.min(0.5, this.speedX));
+    // Twinkle opacity
+    const twinkleOpacity = this.opacity * (0.7 + 0.3 * Math.sin(this.twinkle));
+    this.currentOpacity = twinkleOpacity;
+    if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+      this.reset();
+    }
+  }
+
+  draw() {
+    ctx2d.save();
+    ctx2d.globalAlpha = this.currentOpacity;
+    ctx2d.fillStyle   = `${this.color}1)`;
+
+    if (this.shape === 'diamond') {
+      ctx2d.shadowBlur  = 6;
+      ctx2d.shadowColor = `${this.color}0.8)`;
+      ctx2d.beginPath();
+      ctx2d.moveTo(this.x,              this.y - this.size * 2);
+      ctx2d.lineTo(this.x + this.size,  this.y);
+      ctx2d.lineTo(this.x,              this.y + this.size * 2);
+      ctx2d.lineTo(this.x - this.size,  this.y);
+      ctx2d.closePath();
+      ctx2d.fill();
+    } else {
+      ctx2d.shadowBlur  = 4;
+      ctx2d.shadowColor = `${this.color}0.6)`;
+      ctx2d.beginPath();
+      ctx2d.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx2d.fill();
+    }
+
+    ctx2d.restore();
+  }
+}
+
+// Shooting stars
+class ShootingStar {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x      = Math.random() * canvas.width;
+    this.y      = Math.random() * canvas.height * 0.5;
+    this.len    = Math.random() * 100 + 60;
+    this.speed  = Math.random() * 4 + 3;
+    this.angle  = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
+    this.opacity = 0;
+    this.fadeIn  = true;
+    this.active  = false;
+    this.timer   = Math.random() * 300;
+  }
+
+  update() {
+    if (!this.active) {
+      this.timer--;
+      if (this.timer <= 0) this.active = true;
+      return;
+    }
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    if (this.fadeIn) {
+      this.opacity += 0.05;
+      if (this.opacity >= 0.8) this.fadeIn = false;
+    } else {
+      this.opacity -= 0.03;
+    }
+    if (this.opacity <= 0 || this.x > canvas.width || this.y > canvas.height) {
+      this.reset();
+    }
+  }
+
+  draw() {
+    if (!this.active || this.opacity <= 0) return;
+    ctx2d.save();
+    ctx2d.globalAlpha = this.opacity;
+    const grad = ctx2d.createLinearGradient(
+      this.x, this.y,
+      this.x - Math.cos(this.angle) * this.len,
+      this.y - Math.sin(this.angle) * this.len
+    );
+    grad.addColorStop(0,   'rgba(255, 220, 220, 0.9)');
+    grad.addColorStop(0.4, 'rgba(183, 110, 121, 0.4)');
+    grad.addColorStop(1,   'rgba(183, 110, 121, 0)');
+    ctx2d.strokeStyle = grad;
+    ctx2d.lineWidth   = 1.5;
+    ctx2d.shadowBlur  = 8;
+    ctx2d.shadowColor = 'rgba(183, 110, 121, 0.6)';
+    ctx2d.beginPath();
+    ctx2d.moveTo(this.x, this.y);
+    ctx2d.lineTo(
+      this.x - Math.cos(this.angle) * this.len,
+      this.y - Math.sin(this.angle) * this.len
+    );
+    ctx2d.stroke();
+    ctx2d.restore();
+  }
+}
+
+let shootingStars = [];
+
+function startParticles() {
+  particleRunning = true;
+  resizeCanvas();
+  particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+  shootingStars = Array.from({ length: 4 }, () => new ShootingStar());
+  animateParticles();
+}
+
+function stopParticles() {
+  particleRunning = false;
+  cancelAnimationFrame(animFrame);
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+  particles = [];
+  shootingStars = [];
+}
+
+function animateParticles() {
+  if (!particleRunning) return;
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw connections between nearby particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx   = particles[i].x - particles[j].x;
+      const dy   = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        ctx2d.save();
+        ctx2d.globalAlpha = (1 - dist / 80) * 0.08;
+        ctx2d.strokeStyle = 'rgba(183, 110, 121, 1)';
+        ctx2d.lineWidth   = 0.5;
+        ctx2d.beginPath();
+        ctx2d.moveTo(particles[i].x, particles[i].y);
+        ctx2d.lineTo(particles[j].x, particles[j].y);
+        ctx2d.stroke();
+        ctx2d.restore();
+      }
+    }
+  }
+
+  particles.forEach(p => { p.update(); p.draw(); });
+  shootingStars.forEach(s => { s.update(); s.draw(); });
+
+  animFrame = requestAnimationFrame(animateParticles);
+}
+
+updateFsDisplay();
