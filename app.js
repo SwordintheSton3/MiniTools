@@ -909,7 +909,6 @@ fsReset.addEventListener('click', resetFs);
 
 // ── Open fullscreen ──
 document.getElementById('pomFullscreen').addEventListener('click', () => {
-  // Sync state from main timer
   fsTotal    = pomTotal;
   fsSeconds  = pomSeconds;
   fsSesCount = pomSesCount;
@@ -918,10 +917,13 @@ document.getElementById('pomFullscreen').addEventListener('click', () => {
   fsOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
   startParticles();
+  // Show exit button immediately when overlay opens
+  fsExit.classList.add('visible');
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
 });
+
 
 // ═══════════════════════════════════════
 // PARTICLE SYSTEM
@@ -1111,7 +1113,10 @@ updateFsDisplay();
 function closeFs() {
   stopFs();
   fsOverlay.classList.remove('active');
-  fsExit.classList.remove('visible');
+  // Delay removing visible until after the overlay fade (500ms transition)
+  setTimeout(() => {
+    fsExit.classList.remove('visible');
+  }, 500);
   document.body.style.overflow = '';
   stopParticles();
   if (document.fullscreenElement) {
