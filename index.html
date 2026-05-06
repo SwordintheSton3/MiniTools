@@ -63,6 +63,7 @@
     <button class="nav-btn" data-tool="gradient-gen">Gradients</button>
     <button class="nav-btn" data-tool="age-calc">Age</button>
     <button class="nav-btn" data-tool="metronome">Metronome & Tuner</button>
+    <button class="nav-btn" data-tool="chord-tool">Chords</button>
     <button class="nav-btn" data-tool="base-converter">Base Converter</button>
   </nav>
 
@@ -514,6 +515,144 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════ -->
+    <!-- CHORD TOOL -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="chord-tool">
+      <div class="panel-header">
+        <h2>Chord Explorer</h2>
+        <p>Visualize, transpose, explore</p>
+      </div>
+      <div class="panel-body">
+    
+        <!-- INPUT ROW -->
+        <div class="chord-search-wrap">
+          <input type="text" id="chordInput" placeholder="Type a chord... Cm7, F#maj9, Bbdim"/>
+          <div class="chord-suggestions" id="chordSuggestions"></div>
+        </div>
+    
+        <!-- CHORD INFO -->
+        <div class="chord-info-row" id="chordInfo" style="display:none">
+          <div class="chord-name-display" id="chordNameDisplay">—</div>
+          <div class="chord-formula" id="chordFormula">—</div>
+          <div class="chord-notes-row" id="chordNotesRow"></div>
+        </div>
+    
+        <!-- TRANSPOSITION -->
+        <div class="chord-transpose-row" id="chordTransposeRow" style="display:none">
+          <div class="input-row">
+            <label>Instrument</label>
+            <select id="transposeInstrument">
+              <optgroup label="C Instruments (concert pitch)">
+                <option value="0">Concert Pitch (C)</option>
+                <option value="0">Piano</option>
+                <option value="0">Flute</option>
+                <option value="0">Oboe</option>
+                <option value="0">Violin</option>
+                <option value="0">Guitar (sounds 8vb)</option>
+                <option value="0">Bass Guitar (sounds 8vb)</option>
+                <option value="0">Trombone</option>
+                <option value="0">Tuba</option>
+                <option value="0">Euphonium (bass clef)</option>
+                <option value="0">Cello</option>
+                <option value="0">Bassoon</option>
+              </optgroup>
+              <optgroup label="Bb Instruments (sounds M2 lower)">
+                <option value="2">Bb Clarinet</option>
+                <option value="2">Bb Trumpet</option>
+                <option value="2">Bb Flugelhorn</option>
+                <option value="2">Tenor Saxophone</option>
+                <option value="2">Soprano Saxophone</option>
+                <option value="2">Bb Cornet</option>
+                <option value="2">Bass Clarinet (sounds M9 lower)</option>
+                <option value="2">Bb Soprano Recorder</option>
+              </optgroup>
+              <optgroup label="Eb Instruments (sounds M6 lower)">
+                <option value="9">Alto Saxophone</option>
+                <option value="9">Baritone Saxophone</option>
+                <option value="9">Eb Clarinet</option>
+                <option value="9">Eb Trumpet</option>
+                <option value="9">Alto Horn / Tenor Horn</option>
+              </optgroup>
+              <optgroup label="F Instruments (sounds P5 lower)">
+                <option value="7">French Horn (F)</option>
+                <option value="7">English Horn / Cor Anglais</option>
+                <option value="7">Basset Horn</option>
+              </optgroup>
+              <optgroup label="G Instruments">
+                <option value="5">Alto Flute</option>
+                <option value="5">G Trumpet</option>
+              </optgroup>
+              <optgroup label="A Instruments">
+                <option value="3">A Clarinet</option>
+                <option value="3">A Trumpet</option>
+              </optgroup>
+              <optgroup label="D Instruments">
+                <option value="10">D Trumpet</option>
+                <option value="10">D Clarinet</option>
+              </optgroup>
+              <optgroup label="C Instruments (octave transposing)">
+                <option value="0">Piccolo (sounds 8va)</option>
+                <option value="0">Contrabass (sounds 8vb)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="transposed-result" id="transposedResult" style="display:none">
+            <span class="output-label">Written chord for this instrument</span>
+            <span class="transposed-chord" id="transposedChord">—</span>
+          </div>
+        </div>
+    
+        <!-- PIANO -->
+        <div class="chord-visual-section" id="chordVisualSection" style="display:none">
+          <h3 class="sub-title">✦ Piano</h3>
+          <div class="piano-wrap">
+            <div class="piano" id="piano"></div>
+          </div>
+    
+          <!-- FRETBOARD -->
+          <h3 class="sub-title" style="margin-top:2rem">✦ Guitar Fretboard</h3>
+    
+          <div class="fretboard-controls">
+            <div class="input-row">
+              <label>Tuning</label>
+              <select id="guitarTuning">
+                <option value="E,A,D,G,B,E">Standard (EADGBE)</option>
+                <option value="D,A,D,G,B,E">Drop D</option>
+                <option value="D,G,D,G,B,D">Open G</option>
+                <option value="E,A,D,G,B,E">DADGAD</option>
+                <option value="C,G,C,F,A,D">Open C</option>
+                <option value="D,A,D,F#,A,D">Open D</option>
+                <option value="Eb,Ab,Db,Gb,Bb,Eb">Eb Standard</option>
+                <option value="D,G,C,F,A,D">Drop C</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <label>Frets: <span id="fretCountLabel">5</span></label>
+              <input type="range" id="fretCount" min="4" max="12" value="5"/>
+            </div>
+          </div>
+    
+          <!-- Voicing tabs -->
+          <div class="voicing-tabs" id="voicingTabs"></div>
+    
+          <div class="fretboard-wrap">
+            <div class="fretboard" id="fretboard"></div>
+          </div>
+    
+          <div class="voicing-name" id="voicingName"></div>
+    
+        </div>
+    
+        <!-- RELATED CHORDS -->
+        <div class="related-chords-section" id="relatedChordsSection" style="display:none">
+          <h3 class="sub-title">✦ Related Chords</h3>
+          <div class="related-chords-grid" id="relatedChordsGrid"></div>
+        </div>
+    
+      </div>
+    </section>
+    
     <!-- ═══════════════════════════════════ -->
     <!-- BASE CONVERTER -->
     <!-- ═══════════════════════════════════ -->
