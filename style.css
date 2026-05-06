@@ -1567,6 +1567,450 @@ select option {
 }
 
 /* ═══════════════════════════════════════
+   CHORD TOOL
+═══════════════════════════════════════ */
+
+/* ── Search ── */
+.chord-search-wrap {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.chord-search-wrap input {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius);
+}
+
+.chord-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-mid);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  z-index: 100;
+  overflow: hidden;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.chord-suggestion-item {
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.chord-suggestion-item:hover {
+  background: rgba(183,110,121,0.1);
+  color: var(--accent-soft);
+}
+
+.chord-suggestion-item .sugg-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--accent-rose);
+}
+
+.chord-suggestion-item .sugg-type {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Chord info ── */
+.chord-info-row {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.chord-name-display {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 300;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent-rose));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.chord-formula {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.chord-notes-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chord-note-pill {
+  background: rgba(183,110,121,0.15);
+  border: 1px solid rgba(183,110,121,0.3);
+  border-radius: 50px;
+  padding: 0.3rem 0.8rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--accent-soft);
+  letter-spacing: 0.05em;
+}
+
+.chord-note-pill.root {
+  background: linear-gradient(135deg, rgba(183,110,121,0.4), rgba(155,127,199,0.3));
+  border-color: var(--accent-rose);
+  color: white;
+}
+
+/* ── Transposition ── */
+.chord-transpose-row {
+  margin-bottom: 1.5rem;
+}
+
+.transposed-result {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transposed-chord {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  color: var(--accent-gold);
+  letter-spacing: 0.05em;
+}
+
+/* ── Piano ── */
+.piano-wrap {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.piano {
+  display: flex;
+  position: relative;
+  height: 140px;
+  width: fit-content;
+  margin: 0 auto;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+}
+
+.piano-key {
+  position: relative;
+  cursor: default;
+  border-radius: 0 0 6px 6px;
+  transition: background 0.2s ease;
+}
+
+.piano-key.white {
+  width: 36px;
+  height: 140px;
+  background: linear-gradient(180deg, #e8e0f0 0%, #f5f0ff 100%);
+  border: 1px solid rgba(0,0,0,0.3);
+  border-top: none;
+  z-index: 1;
+  margin-right: 1px;
+}
+
+.piano-key.black {
+  width: 22px;
+  height: 88px;
+  background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: none;
+  position: absolute;
+  z-index: 2;
+  margin-left: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.piano-key.white.active {
+  background: linear-gradient(180deg,
+    rgba(183,110,121,0.6) 0%,
+    rgba(155,127,199,0.4) 100%);
+  box-shadow: 0 0 15px rgba(183,110,121,0.5),
+              inset 0 0 10px rgba(183,110,121,0.2);
+  border-color: var(--accent-rose);
+}
+
+.piano-key.black.active {
+  background: linear-gradient(180deg,
+    rgba(183,110,121,0.9) 0%,
+    rgba(155,127,199,0.7) 100%);
+  box-shadow: 0 0 12px rgba(183,110,121,0.7),
+              inset 0 0 8px rgba(0,0,0,0.3);
+  border-color: var(--accent-rose);
+}
+
+.piano-key.root-key.white {
+  background: linear-gradient(180deg,
+    rgba(201,169,110,0.7) 0%,
+    rgba(201,169,110,0.4) 100%);
+  box-shadow: 0 0 15px rgba(201,169,110,0.5);
+  border-color: var(--accent-gold);
+}
+
+.piano-key.root-key.black {
+  background: linear-gradient(180deg,
+    rgba(201,169,110,1) 0%,
+    rgba(201,169,110,0.7) 100%);
+  box-shadow: 0 0 12px rgba(201,169,110,0.7);
+  border-color: var(--accent-gold);
+}
+
+/* ── Fretboard ── */
+.fretboard-controls {
+  margin-bottom: 1rem;
+}
+
+.voicing-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.voicing-tab {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  transition: var(--transition);
+}
+
+.voicing-tab.active {
+  border-color: var(--accent-rose);
+  color: var(--accent-soft);
+  background: rgba(183,110,121,0.15);
+}
+
+.voicing-tab:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.fretboard-wrap {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.fretboard {
+  position: relative;
+  width: fit-content;
+  min-width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.fretboard-strings {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.fret-row {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  position: relative;
+}
+
+.string-name {
+  width: 28px;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+.fret-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  border-right: 2px solid rgba(183,110,121,0.15);
+}
+
+.fret-cell:first-of-type {
+  border-left: 4px solid rgba(232,196,196,0.4);
+}
+
+.fret-cell .string-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+    rgba(201,169,110,0.6),
+    rgba(232,196,196,0.4));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fret-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: 'Raleway', sans-serif;
+  transition: var(--transition);
+}
+
+.fret-dot.note {
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-lavender));
+  box-shadow: 0 0 10px rgba(183,110,121,0.5);
+  color: white;
+}
+
+.fret-dot.root-dot {
+  background: linear-gradient(135deg, var(--accent-gold), #e8c070);
+  box-shadow: 0 0 12px rgba(201,169,110,0.6);
+  color: #1a0a2e;
+  font-weight: 700;
+}
+
+.fret-dot.muted {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  border: none;
+  box-shadow: none;
+}
+
+.fret-dot.open {
+  background: transparent;
+  border: 2px solid rgba(183,110,121,0.4);
+  color: var(--accent-rose);
+  font-size: 0.6rem;
+}
+
+.fret-numbers {
+  display: flex;
+  margin-left: 28px;
+  margin-top: 0.5rem;
+}
+
+.fret-number {
+  flex: 1;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.fretboard-inlays {
+  position: absolute;
+  bottom: 0.25rem;
+  left: 28px;
+  right: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.inlay-cell {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.inlay-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(183,110,121,0.2);
+}
+
+.voicing-name {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  letter-spacing: 0.1em;
+  font-style: italic;
+}
+
+/* ── Related chords ── */
+.related-chords-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.related-chords-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+
+.related-chord-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: center;
+}
+
+.related-chord-btn:hover {
+  border-color: var(--accent-rose);
+  color: var(--accent-soft);
+  background: rgba(183,110,121,0.1);
+  transform: translateY(-2px);
+}
+
+.related-chord-btn small {
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════
    BASE CONVERTER
 ═══════════════════════════════════════ */
 .base-input-section {
