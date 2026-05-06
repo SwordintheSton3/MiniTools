@@ -105,20 +105,22 @@ updateColor('#b76e79');
 // ═══════════════════════════════════════
 // POMODORO
 // ═══════════════════════════════════════
-let pomInterval = null;
-let pomSeconds  = 25 * 60;
-let pomTotal    = 25 * 60;
-let pomRunning  = false;
-let pomSesCount = 0;
+let pomInterval  = null;
+let pomSeconds   = 25 * 60;
+let pomTotal     = 25 * 60;
+let pomRunning   = false;
+let pomSesCount  = 0;
+let isCustomMode = false;
 
-const pomDisplay  = document.getElementById('pomDisplay');
-const pomRing     = document.getElementById('pomRing');
-const pomStart    = document.getElementById('pomStart');
-const pomReset    = document.getElementById('pomReset');
-const pomSessions = document.getElementById('pomSessions');
-const pomModes    = document.querySelectorAll('.pom-mode');
+const pomDisplay    = document.getElementById('pomDisplay');
+const pomRing       = document.getElementById('pomRing');
+const pomStart      = document.getElementById('pomStart');
+const pomReset      = document.getElementById('pomReset');
+const pomSessions   = document.getElementById('pomSessions');
+const pomModes      = document.querySelectorAll('.pom-mode');
+const customTimeRow = document.getElementById('customTimeRow');
 
-// Add SVG gradient for ring
+// Inject SVG gradient for ring
 const svgEl = document.querySelector('.clock-ring svg');
 const defs  = document.createElementNS('http://www.w3.org/2000/svg','defs');
 const grad  = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
@@ -133,34 +135,98 @@ pomRing.setAttribute('stroke','url(#ringGrad)');
 
 const circumference = 2 * Math.PI * 90;
 
+function formatTime(totalSecs) {
+  if (totalSecs >= 3600) {
+    // Show H:MM:SS when over an hour
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60).toString().padStart(2,'0');
+    const s = (totalSecs % 60).toString().padStart(2,'0');
+    return `${h}:${m}:${s}`;
+  }
+  const m = Math.floor(totalSecs / 60).toString().padStart(2,'0');
+  const s = (totalSecs % 60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
 function updatePomDisplay() {
-  const m = Math.floor(pomSeconds/60).toString().padStart(2,'0');
-  const s = (pomSeconds%60).toString().padStart(2,'0');
-  pomDisplay.textContent = `${m}:${s}`;
-  const progress = pomSeconds / pomTotal;
+  pomDisplay.textContent = formatTime(pomSeconds);
+  // Shrink font slightly for longer times
+  pomDisplay.style.fontSize = pomSeconds >= 3600 ? '2rem' : '3rem';
+  const progress = pomTotal > 0 ? pomSeconds / pomTotal : 1;
   pomRing.style.strokeDasharray  = circumference;
   pomRing.style.strokeDashoffset = circumference * (1 - progress);
 }
 
+function resetTimer() {
+  clearInterval(pomInterval);
+  pomRunning = false;
+  pomStart.textContent = 'Start';
+  pomSeconds = pomTotal;
+  updatePomDisplay();
+}
+
+function playDoneSound() {
+  const ctx  = new AudioContext();
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = 880;
+  osc.type = 'sine';
+  gain.gain.setValueAtTime(0.5, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
+  osc.start();
+  osc.stop(ctx.currentTime + 2);
+}
+
+// Mode buttons (Focus / Short Break / Long Break / Custom)
 pomModes.forEach(btn => {
   btn.addEventListener('click', () => {
     pomModes.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    clearInterval(pomInterval);
-    pomRunning = false;
-    pomStart.textContent = 'Start';
-    pomTotal   = parseInt(btn.dataset.mins) * 60;
-    pomSeconds = pomTotal;
-    updatePomDisplay();
+
+    if (btn.dataset.mins === 'custom') {
+      // Show custom input, don't change time yet
+      isCustomMode = true;
+      customTimeRow.classList.add('visible');
+    } else {
+      isCustomMode = false;
+      customTimeRow.classList.remove('visible');
+      pomTotal   = parseInt(btn.dataset.mins) * 60;
+      pomSeconds = pomTotal;
+      resetTimer();
+    }
   });
 });
 
+// Set custom time button
+document.getElementById('setCustomTime').addEventListener('click', () => {
+  const h   = parseInt(document.getElementById('customHours').value) || 0;
+  const m   = parseInt(document.getElementById('customMins').value)  || 0;
+  const s   = parseInt(document.getElementById('customSecs').value)  || 0;
+  const total = h * 3600 + m * 60 + s;
+
+  if (total <= 0) {
+    // Shake the inputs if nothing entered
+    customTimeRow.style.animation = 'none';
+    customTimeRow.offsetHeight;
+    customTimeRow.style.animation = 'shake 0.3s ease';
+    return;
+  }
+
+  pomTotal   = total;
+  pomSeconds = total;
+  resetTimer();
+});
+
+// Start / Pause
 pomStart.addEventListener('click', () => {
   if (pomRunning) {
     clearInterval(pomInterval);
     pomRunning = false;
     pomStart.textContent = 'Resume';
   } else {
+    if (pomSeconds <= 0) return;
     pomRunning = true;
     pomStart.textContent = 'Pause';
     pomInterval = setInterval(() => {
@@ -172,28 +238,25 @@ pomStart.addEventListener('click', () => {
         pomStart.textContent = 'Start';
         pomSesCount++;
         pomSessions.textContent = pomSesCount;
-        // bell sound
-        const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.5, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
-        osc.start(); osc.stop(ctx.currentTime + 2);
+        playDoneSound();
       }
     }, 1000);
   }
 });
 
-pomReset.addEventListener('click', () => {
-  clearInterval(pomInterval);
-  pomRunning = false;
-  pomStart.textContent = 'Start';
-  pomSeconds = pomTotal;
-  updatePomDisplay();
-});
+// Reset
+pomReset.addEventListener('click', resetTimer);
+
+// Add shake animation to css dynamically
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-6px); }
+    75%       { transform: translateX(6px); }
+  }
+`;
+document.head.appendChild(shakeStyle);
 
 updatePomDisplay();
 
