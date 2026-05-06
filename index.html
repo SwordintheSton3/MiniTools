@@ -155,6 +155,7 @@
     <div class="pom-controls">
       <button class="tool-btn" id="pomStart">Start</button>
       <button class="tool-btn secondary" id="pomReset">Reset</button>
+      <button class="tool-btn secondary" id="pomFullscreen" title="Fullscreen">⛶ Fullscreen</button>
     </div>
 
     <div class="pom-sessions">Sessions completed: <span id="pomSessions">0</span></div>
@@ -524,5 +525,68 @@
   </footer>
 
   <script src="app.js"></script>
+
+  <!-- FULLSCREEN OVERLAY -->
+  <div class="fs-overlay" id="fsOverlay">
+    <canvas class="fs-particles" id="fsCanvas"></canvas>
+  
+    <div class="fs-content">
+  
+      <button class="fs-exit-btn" id="fsExit">✕</button>
+  
+      <div class="fs-ornament">✦</div>
+      <div class="fs-title">Pomodoro Timer</div>
+  
+      <div class="fs-mode-btns">
+        <button class="fs-mode-btn active" data-mins="25">Focus</button>
+        <button class="fs-mode-btn" data-mins="5">Short Break</button>
+        <button class="fs-mode-btn" data-mins="15">Long Break</button>
+        <button class="fs-mode-btn" data-mins="custom">Custom</button>
+      </div>
+  
+      <!-- Custom time input in fullscreen -->
+      <div class="fs-custom-row" id="fsCustomRow">
+        <div class="custom-time-inputs">
+          <div class="custom-time-field">
+            <input type="number" id="fsCustomHours" min="0" max="23" value="0"/>
+            <label>hrs</label>
+          </div>
+          <div class="custom-time-sep">:</div>
+          <div class="custom-time-field">
+            <input type="number" id="fsCustomMins" min="0" max="59" value="0"/>
+            <label>min</label>
+          </div>
+          <div class="custom-time-sep">:</div>
+          <div class="custom-time-field">
+            <input type="number" id="fsCustomSecs" min="0" max="59" value="0"/>
+            <label>sec</label>
+          </div>
+        </div>
+        <button class="tool-btn" id="fsSetCustom">Set ✦</button>
+      </div>
+  
+      <div class="fs-clock-ring">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="fsRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#b76e79"/>
+              <stop offset="100%" stop-color="#9b7fc7"/>
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="90" class="ring-bg"/>
+          <circle cx="100" cy="100" r="90" class="ring-progress" id="fsRing"/>
+        </svg>
+        <div class="fs-clock-display" id="fsDisplay">25:00</div>
+      </div>
+  
+      <div class="fs-controls">
+        <button class="tool-btn" id="fsStart">Start</button>
+        <button class="tool-btn secondary" id="fsReset">Reset</button>
+      </div>
+  
+      <div class="fs-sessions">Sessions: <span id="fsSessions">0</span></div>
+  
+    </div>
+  </div>
 </body>
 </html>
