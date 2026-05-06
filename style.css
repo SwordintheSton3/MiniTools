@@ -1413,8 +1413,15 @@ select option {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
-  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fs-exit-btn.visible {
+  opacity: 1;
+  pointer-events: all;
 }
 
 .fs-exit-btn:hover {
