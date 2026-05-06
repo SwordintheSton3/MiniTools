@@ -1151,3 +1151,135 @@ document.addEventListener('mousemove', e => {
     fsExit.classList.remove('visible');
   }
 });
+
+// ═══════════════════════════════════════
+// BASE CONVERTER
+// ═══════════════════════════════════════
+const baseFrom        = document.getElementById('baseFrom');
+const baseFromCustomRow = document.getElementById('baseFromCustomRow');
+const baseInput       = document.getElementById('baseInput');
+const customBaseResult = document.getElementById('customBaseResult');
+const bitVisual       = document.getElementById('bitVisual');
+const bitRow          = document.getElementById('bitRow');
+const bitNote         = document.getElementById('bitNote');
+
+// Show/hide custom base input
+baseFrom.addEventListener('change', () => {
+  baseFromCustomRow.style.display =
+    baseFrom.value === 'custom' ? 'flex' : 'none';
+});
+
+// Copy buttons for base results
+document.querySelectorAll('.copy-btn[data-base]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const base = btn.dataset.base;
+    const el   = base === 'custom'
+      ? document.getElementById('baseOutCustom')
+      : document.getElementById(`baseOut${base}`);
+    if (!el || el.textContent === '—' || el.textContent === 'Invalid') return;
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  });
+});
+
+function updateBitVisual(decValue) {
+  // Only show for values that fit reasonably
+  if (decValue < 0 || decValue > 4294967295) {
+    bitVisual.style.display = 'none';
+    return;
+  }
+  bitVisual.style.display = 'block';
+
+  const bits = decValue <= 255 ? 8 : decValue <= 65535 ? 16 : 32;
+  const binStr = decValue.toString(2).padStart(bits, '0');
+
+  bitRow.innerHTML = '';
+
+  // Group into nibbles of 4
+  for (let i = 0; i < binStr.length; i++) {
+    if (i > 0 && i % 4 === 0) {
+      const spacer = document.createElement('div');
+      spacer.style.width = '6px';
+      bitRow.appendChild(spacer);
+    }
+    const cell = document.createElement('div');
+    cell.className = `bit-cell ${binStr[i] === '1' ? 'on' : 'off'}`;
+    cell.textContent = binStr[i];
+    bitRow.appendChild(cell);
+  }
+
+  bitNote.textContent = `${bits}-bit · ${decValue <= 255 ? '1 byte' : decValue <= 65535 ? '2 bytes' : '4 bytes'}`;
+}
+
+document.getElementById('convertBase').addEventListener('click', () => {
+  const rawInput = baseInput.value.trim().toUpperCase();
+  if (!rawInput) return;
+
+  const fromBase = baseFrom.value === 'custom'
+    ? parseInt(document.getElementById('baseFromCustom').value)
+    : parseInt(baseFrom.value);
+
+  if (isNaN(fromBase) || fromBase < 2 || fromBase > 36) {
+    baseInput.style.borderColor = 'var(--accent-rose)';
+    return;
+  }
+  baseInput.style.borderColor = '';
+
+  // Validate input for the given base
+  const validChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0, fromBase);
+  const isValid    = rawInput.split('').every(c => validChars.includes(c));
+
+  if (!isValid) {
+    document.getElementById('baseOut2').textContent   = 'Invalid';
+    document.getElementById('baseOut8').textContent   = 'Invalid';
+    document.getElementById('baseOut10').textContent  = 'Invalid';
+    document.getElementById('baseOut16').textContent  = 'Invalid';
+    document.getElementById('baseOutCustom').textContent = 'Invalid';
+    bitVisual.style.display = 'none';
+    return;
+  }
+
+  // Convert to decimal first
+  const decVal = parseInt(rawInput, fromBase);
+
+  // Output to all bases
+  document.getElementById('baseOut2').textContent  = decVal.toString(2);
+  document.getElementById('baseOut8').textContent  = decVal.toString(8);
+  document.getElementById('baseOut10').textContent = decVal.toString(10);
+  document.getElementById('baseOut16').textContent = decVal.toString(16).toUpperCase();
+
+  // Custom output base
+  const toCustomBase = parseInt(document.getElementById('baseFromCustom').value);
+  if (!isNaN(toCustomBase) && toCustomBase >= 2 && toCustomBase <= 36) {
+    customBaseResult.style.display = 'block';
+    document.getElementById('customBaseTag').textContent   = `B${toCustomBase}`;
+    document.getElementById('customBaseLabel').textContent = `Base ${toCustomBase}`;
+    document.getElementById('baseOutCustom').textContent   = decVal.toString(toCustomBase).toUpperCase();
+  }
+
+  // Bit visualization
+  updateBitVisual(decVal);
+});
+
+// Also convert on Enter key
+baseInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('convertBase').click();
+});
+
+// ── ASCII helper ──
+document.getElementById('asciiCharInput').addEventListener('input', e => {
+  const char = e.target.value;
+  if (!char) {
+    document.getElementById('asciiDec').textContent = '—';
+    document.getElementById('asciiHex').textContent = '—';
+    document.getElementById('asciiBin').textContent = '—';
+    return;
+  }
+  const code = char.charCodeAt(0);
+  document.getElementById('asciiDec').textContent = code;
+  document.getElementById('asciiHex').textContent = code.toString(16).toUpperCase().padStart(2, '0');
+  document.getElementById('asciiBin').textContent = code.toString(2).padStart(8, '0');
+});
