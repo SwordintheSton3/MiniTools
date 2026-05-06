@@ -63,6 +63,7 @@
     <button class="nav-btn" data-tool="gradient-gen">Gradients</button>
     <button class="nav-btn" data-tool="age-calc">Age</button>
     <button class="nav-btn" data-tool="metronome">Metronome & Tuner</button>
+    <button class="nav-btn" data-tool="base-converter">Base Converter</button>
   </nav>
 
   <!-- TOOL PANELS -->
@@ -513,6 +514,114 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════ -->
+    <!-- BASE CONVERTER -->
+    <!-- ═══════════════════════════════════ -->
+    <section class="tool-panel" id="base-converter">
+      <div class="panel-header">
+        <h2>Base Converter</h2>
+        <p>Convert between number bases</p>
+      </div>
+      <div class="panel-body">
+    
+        <div class="base-input-section">
+          <div class="input-row">
+            <label>Input Base</label>
+            <select id="baseFrom">
+              <option value="2">Binary (2)</option>
+              <option value="8">Octal (8)</option>
+              <option value="10" selected>Decimal (10)</option>
+              <option value="16">Hexadecimal (16)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="input-row" id="baseFromCustomRow" style="display:none">
+            <label>Custom Base</label>
+            <input type="number" id="baseFromCustom" min="2" max="36" value="5" placeholder="2-36"/>
+          </div>
+          <div class="input-row">
+            <label>Value</label>
+            <input type="text" id="baseInput" placeholder="Enter value..."/>
+          </div>
+        </div>
+    
+        <button class="tool-btn" id="convertBase">Convert ✦</button>
+    
+        <div class="base-results" id="baseResults">
+          <div class="base-result-card">
+            <div class="base-result-header">
+              <span class="base-tag">BIN</span>
+              <span class="base-label">Base 2</span>
+              <button class="copy-btn" data-base="2">Copy</button>
+            </div>
+            <div class="base-value" id="baseOut2">—</div>
+          </div>
+          <div class="base-result-card">
+            <div class="base-result-header">
+              <span class="base-tag">OCT</span>
+              <span class="base-label">Base 8</span>
+              <button class="copy-btn" data-base="8">Copy</button>
+            </div>
+            <div class="base-value" id="baseOut8">—</div>
+          </div>
+          <div class="base-result-card">
+            <div class="base-result-header">
+              <span class="base-tag">DEC</span>
+              <span class="base-label">Base 10</span>
+              <button class="copy-btn" data-base="10">Copy</button>
+            </div>
+            <div class="base-value" id="baseOut10">—</div>
+          </div>
+          <div class="base-result-card">
+            <div class="base-result-header">
+              <span class="base-tag">HEX</span>
+              <span class="base-label">Base 16</span>
+              <button class="copy-btn" data-base="16">Copy</button>
+            </div>
+            <div class="base-value" id="baseOut16">—</div>
+          </div>
+          <div class="base-result-card" id="customBaseResult" style="display:none">
+            <div class="base-result-header">
+              <span class="base-tag" id="customBaseTag">B5</span>
+              <span class="base-label" id="customBaseLabel">Base 5</span>
+              <button class="copy-btn" data-base="custom">Copy</button>
+            </div>
+            <div class="base-value" id="baseOutCustom">—</div>
+          </div>
+        </div>
+    
+        <!-- Bit visualization for binary -->
+        <div class="bit-visual" id="bitVisual" style="display:none">
+          <div class="bit-label">8-bit visualization</div>
+          <div class="bit-row" id="bitRow"></div>
+          <div class="bit-note" id="bitNote"></div>
+        </div>
+    
+        <!-- ASCII helper -->
+        <div class="ascii-section">
+          <h3 class="sub-title" style="font-size:1rem; margin-bottom:0.75rem;">✦ ASCII Quick Reference</h3>
+          <div class="input-row">
+            <label>Char → Code</label>
+            <input type="text" id="asciiCharInput" maxlength="1" placeholder="A"/>
+          </div>
+          <div class="ascii-result-row">
+            <div class="ascii-mini-card">
+              <span class="output-label">DEC</span>
+              <span class="output-value" id="asciiDec">—</span>
+            </div>
+            <div class="ascii-mini-card">
+              <span class="output-label">HEX</span>
+              <span class="output-value" id="asciiHex">—</span>
+            </div>
+            <div class="ascii-mini-card">
+              <span class="output-label">BIN</span>
+              <span class="output-value" id="asciiBin">—</span>
+            </div>
+          </div>
+        </div>
+    
+      </div>
+    </section>
   </main>
 
   <!-- FOOTER -->
