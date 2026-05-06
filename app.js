@@ -1106,6 +1106,26 @@ function animateParticles() {
 updateFsDisplay();
 
 // ═══════════════════════════════════════
+// CLOSE FULLSCREEN
+// ═══════════════════════════════════════
+function closeFs() {
+  stopFs();
+  fsOverlay.classList.remove('active');
+  fsExit.classList.remove('visible');
+  document.body.style.overflow = '';
+  stopParticles();
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+fsExit.addEventListener('click', closeFs);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
+});
+
+// ═══════════════════════════════════════
 // EXIT BUTTON PROXIMITY REVEAL
 // ═══════════════════════════════════════
 const PROXIMITY = 150;
@@ -1113,9 +1133,6 @@ const PROXIMITY = 150;
 document.addEventListener('mousemove', e => {
   if (!fsOverlay.classList.contains('active')) return;
 
-  // Button is fixed: top-right corner of the SCREEN
-  // right: 1.5rem = ~24px, so center is at (windowWidth - 24 - 21)
-  // top: 1.5rem = ~24px, so center is at (24 + 21)
   const btnCenterX = window.innerWidth - 45;
   const btnCenterY = 45;
 
@@ -1124,8 +1141,8 @@ document.addEventListener('mousemove', e => {
   const dist = Math.sqrt(dx * dx + dy * dy);
 
   if (dist < PROXIMITY) {
-    fsExitBtn.classList.add('visible');
+    fsExit.classList.add('visible');
   } else {
-    fsExitBtn.classList.remove('visible');
+    fsExit.classList.remove('visible');
   }
 });
