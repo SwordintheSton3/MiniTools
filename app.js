@@ -792,25 +792,20 @@ document.getElementById('tunerStop').addEventListener('click', () => {
 // ═══════════════════════════════════════
 // FULLSCREEN POMODORO
 // ═══════════════════════════════════════
-
-// ─── Sync state between main and fullscreen ───
-// The fullscreen timer runs its OWN interval but
-// shares pomSesCount and mirrors the main display
-
-let fsSeconds  = pomTotal;
-let fsTotal    = pomTotal;
-let fsRunning  = false;
-let fsInterval = null;
-let fsSesCount = 0;
+let fsSeconds    = 25 * 60;
+let fsTotal      = 25 * 60;
+let fsRunning    = false;
+let fsInterval   = null;
+let fsSesCount   = 0;
 let fsCustomMode = false;
 
-const fsOverlay  = document.getElementById('fsOverlay');
-const fsDisplay  = document.getElementById('fsDisplay');
-const fsRing     = document.getElementById('fsRing');
-const fsStart    = document.getElementById('fsStart');
-const fsReset    = document.getElementById('fsReset');
-const fsExit     = document.getElementById('fsExit');
-const fsSessions = document.getElementById('fsSessions');
+const fsOverlay   = document.getElementById('fsOverlay');
+const fsDisplay   = document.getElementById('fsDisplay');
+const fsRing      = document.getElementById('fsRing');
+const fsStart     = document.getElementById('fsStart');
+const fsReset     = document.getElementById('fsReset');
+const fsExit      = document.getElementById('fsExit');
+const fsSessions  = document.getElementById('fsSessions');
 const fsCustomRow = document.getElementById('fsCustomRow');
 const fsModeBtns  = document.querySelectorAll('.fs-mode-btn');
 
@@ -819,9 +814,11 @@ fsRing.setAttribute('stroke', 'url(#fsRingGrad)');
 
 function updateFsDisplay() {
   if (isNaN(fsSeconds) || fsSeconds < 0) fsSeconds = 0;
-  if (isNaN(fsTotal)   || fsTotal <= 0)  fsTotal   = fsSeconds || 1;
-  fsDisplay.textContent = formatTime(fsSeconds);
-  fsDisplay.style.fontSize = fsSeconds >= 3600 ? 'clamp(1.8rem, 5vmin, 3rem)' : 'clamp(2.5rem, 8vmin, 4.5rem)';
+  if (isNaN(fsTotal)   || fsTotal   <= 0) fsTotal  = fsSeconds || 1;
+  fsDisplay.textContent    = formatTime(fsSeconds);
+  fsDisplay.style.fontSize = fsSeconds >= 3600
+    ? 'clamp(1.8rem, 5vmin, 3rem)'
+    : 'clamp(2.5rem, 8vmin, 4.5rem)';
   const progress = fsTotal > 0 ? fsSeconds / fsTotal : 1;
   fsRing.style.strokeDasharray  = fsCircumference;
   fsRing.style.strokeDashoffset = fsCircumference * (1 - progress);
@@ -839,7 +836,7 @@ function resetFs() {
   updateFsDisplay();
 }
 
-// Mode buttons
+// ── Mode buttons ──
 fsModeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     fsModeBtns.forEach(b => b.classList.remove('active'));
@@ -857,19 +854,24 @@ fsModeBtns.forEach(btn => {
   });
 });
 
-// Set custom time
+// ── Set custom time ──
 document.getElementById('fsSetCustom').addEventListener('click', () => {
-  const h = parseInt(document.getElementById('fsCustomHours').value) || 0;
-  const m = parseInt(document.getElementById('fsCustomMins').value)  || 0;
-  const s = parseInt(document.getElementById('fsCustomSecs').value)  || 0;
+  const h     = parseInt(document.getElementById('fsCustomHours').value) || 0;
+  const m     = parseInt(document.getElementById('fsCustomMins').value)  || 0;
+  const s     = parseInt(document.getElementById('fsCustomSecs').value)  || 0;
   const total = h * 3600 + m * 60 + s;
-  if (total <= 0) return;
+  if (total <= 0) {
+    fsCustomRow.style.animation = 'none';
+    fsCustomRow.offsetHeight;
+    fsCustomRow.style.animation = 'shake 0.3s ease';
+    return;
+  }
   fsTotal   = total;
   fsSeconds = total;
   resetFs();
 });
 
-// Start / Pause
+// ── Start / Pause ──
 fsStart.addEventListener('click', () => {
   if (fsRunning) {
     stopFs();
@@ -887,37 +889,34 @@ fsStart.addEventListener('click', () => {
         fsSesCount++;
         fsSessions.textContent = fsSesCount;
         playDoneSound();
-        // Flash the ring
+        // Flash ring
         fsRing.style.filter = 'drop-shadow(0 0 30px rgba(183,110,121,0.9))';
-        setTimeout(() => {
-          fsRing.style.filter = '';
-        }, 1000);
+        setTimeout(() => { fsRing.style.filter = ''; }, 1000);
       }
     }, 1000);
   }
 });
 
-// Reset
+// ── Reset ──
 fsReset.addEventListener('click', resetFs);
 
-// ─── Open fullscreen ───
+// ── Open fullscreen ──
 document.getElementById('pomFullscreen').addEventListener('click', () => {
-  // Sync current main timer state into fullscreen
-  fsTotal   = pomTotal;
-  fsSeconds = pomSeconds;
+  // Sync state from main timer
+  fsTotal    = pomTotal;
+  fsSeconds  = pomSeconds;
   fsSesCount = pomSesCount;
   fsSessions.textContent = fsSesCount;
   updateFsDisplay();
   fsOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
   startParticles();
-  // Try native fullscreen API
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen().catch(() => {});
   }
 });
 
-// ─── Close fullscreen ───
+// ── Close fullscreen ──
 function closeFs() {
   stopFs();
   fsOverlay.classList.remove('active');
@@ -930,7 +929,6 @@ function closeFs() {
 
 fsExit.addEventListener('click', closeFs);
 
-// Escape key closes it too
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
 });
@@ -940,8 +938,9 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════
 const canvas = document.getElementById('fsCanvas');
 const ctx2d  = canvas.getContext('2d');
-let particles    = [];
-let animFrame    = null;
+let particles       = [];
+let shootingStars   = [];
+let animFrame       = null;
 let particleRunning = false;
 
 function resizeCanvas() {
@@ -953,65 +952,54 @@ window.addEventListener('resize', () => {
   if (particleRunning) resizeCanvas();
 });
 
-// Particle config
 const PARTICLE_COUNT = 80;
 const COLORS = [
-  'rgba(183, 110, 121,',  // rose
-  'rgba(155, 127, 199,',  // lavender
-  'rgba(201, 169, 110,',  // gold
-  'rgba(232, 196, 196,',  // soft pink
-  'rgba(255, 255, 255,',  // white
+  'rgba(183, 110, 121,',
+  'rgba(155, 127, 199,',
+  'rgba(201, 169, 110,',
+  'rgba(232, 196, 196,',
+  'rgba(255, 255, 255,',
 ];
 
 class Particle {
-  constructor() {
-    this.reset(true);
-  }
+  constructor() { this.reset(true); }
 
   reset(randomY = false) {
-    this.x     = Math.random() * canvas.width;
-    this.y     = randomY ? Math.random() * canvas.height : canvas.height + 10;
-    this.size  = Math.random() * 2.5 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.4;
-    this.speedY = -(Math.random() * 0.6 + 0.2);
-    this.opacity = Math.random() * 0.6 + 0.1;
-    this.fadeSpeed = Math.random() * 0.003 + 0.001;
-    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    this.twinkle = Math.random() * Math.PI * 2;
-    this.twinkleSpeed = Math.random() * 0.03 + 0.01;
-    // Some particles are little diamond shapes
-    this.shape = Math.random() > 0.85 ? 'diamond' : 'circle';
-    this.pulse  = 0;
+    this.x          = Math.random() * canvas.width;
+    this.y          = randomY ? Math.random() * canvas.height : canvas.height + 10;
+    this.size       = Math.random() * 2.5 + 0.5;
+    this.speedX     = (Math.random() - 0.5) * 0.4;
+    this.speedY     = -(Math.random() * 0.6 + 0.2);
+    this.opacity    = Math.random() * 0.6 + 0.1;
+    this.color      = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.twinkle    = Math.random() * Math.PI * 2;
+    this.twinkleSpd = Math.random() * 0.03 + 0.01;
+    this.shape      = Math.random() > 0.85 ? 'diamond' : 'circle';
+    this.currentOpacity = this.opacity;
   }
 
   update() {
     this.x       += this.speedX;
     this.y       += this.speedY;
-    this.twinkle += this.twinkleSpeed;
-    // Gentle horizontal drift
-    this.speedX += (Math.random() - 0.5) * 0.01;
-    this.speedX  = Math.max(-0.5, Math.min(0.5, this.speedX));
-    // Twinkle opacity
-    const twinkleOpacity = this.opacity * (0.7 + 0.3 * Math.sin(this.twinkle));
-    this.currentOpacity = twinkleOpacity;
-    if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
-      this.reset();
-    }
+    this.twinkle += this.twinkleSpd;
+    this.speedX  += (Math.random() - 0.5) * 0.01;
+    this.speedX   = Math.max(-0.5, Math.min(0.5, this.speedX));
+    this.currentOpacity = this.opacity * (0.7 + 0.3 * Math.sin(this.twinkle));
+    if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) this.reset();
   }
 
   draw() {
     ctx2d.save();
     ctx2d.globalAlpha = this.currentOpacity;
     ctx2d.fillStyle   = `${this.color}1)`;
-
     if (this.shape === 'diamond') {
       ctx2d.shadowBlur  = 6;
       ctx2d.shadowColor = `${this.color}0.8)`;
       ctx2d.beginPath();
-      ctx2d.moveTo(this.x,              this.y - this.size * 2);
-      ctx2d.lineTo(this.x + this.size,  this.y);
-      ctx2d.lineTo(this.x,              this.y + this.size * 2);
-      ctx2d.lineTo(this.x - this.size,  this.y);
+      ctx2d.moveTo(this.x,             this.y - this.size * 2);
+      ctx2d.lineTo(this.x + this.size, this.y);
+      ctx2d.lineTo(this.x,             this.y + this.size * 2);
+      ctx2d.lineTo(this.x - this.size, this.y);
       ctx2d.closePath();
       ctx2d.fill();
     } else {
@@ -1021,35 +1009,27 @@ class Particle {
       ctx2d.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       ctx2d.fill();
     }
-
     ctx2d.restore();
   }
 }
 
-// Shooting stars
 class ShootingStar {
-  constructor() {
-    this.reset();
-  }
+  constructor() { this.reset(); }
 
   reset() {
-    this.x      = Math.random() * canvas.width;
-    this.y      = Math.random() * canvas.height * 0.5;
-    this.len    = Math.random() * 100 + 60;
-    this.speed  = Math.random() * 4 + 3;
-    this.angle  = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
+    this.x       = Math.random() * canvas.width;
+    this.y       = Math.random() * canvas.height * 0.5;
+    this.len     = Math.random() * 100 + 60;
+    this.speed   = Math.random() * 4 + 3;
+    this.angle   = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
     this.opacity = 0;
     this.fadeIn  = true;
     this.active  = false;
-    this.timer   = Math.random() * 300;
+    this.timer   = Math.random() * 300 + 60;
   }
 
   update() {
-    if (!this.active) {
-      this.timer--;
-      if (this.timer <= 0) this.active = true;
-      return;
-    }
+    if (!this.active) { this.timer--; if (this.timer <= 0) this.active = true; return; }
     this.x += Math.cos(this.angle) * this.speed;
     this.y += Math.sin(this.angle) * this.speed;
     if (this.fadeIn) {
@@ -1058,9 +1038,7 @@ class ShootingStar {
     } else {
       this.opacity -= 0.03;
     }
-    if (this.opacity <= 0 || this.x > canvas.width || this.y > canvas.height) {
-      this.reset();
-    }
+    if (this.opacity <= 0 || this.x > canvas.width || this.y > canvas.height) this.reset();
   }
 
   draw() {
@@ -1090,12 +1068,10 @@ class ShootingStar {
   }
 }
 
-let shootingStars = [];
-
 function startParticles() {
   particleRunning = true;
   resizeCanvas();
-  particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+  particles     = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
   shootingStars = Array.from({ length: 4 }, () => new ShootingStar());
   animateParticles();
 }
@@ -1104,7 +1080,7 @@ function stopParticles() {
   particleRunning = false;
   cancelAnimationFrame(animFrame);
   ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-  particles = [];
+  particles     = [];
   shootingStars = [];
 }
 
@@ -1112,7 +1088,7 @@ function animateParticles() {
   if (!particleRunning) return;
   ctx2d.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw connections between nearby particles
+  // Constellation lines
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
       const dx   = particles[i].x - particles[j].x;
@@ -1132,9 +1108,8 @@ function animateParticles() {
     }
   }
 
-  particles.forEach(p => { p.update(); p.draw(); });
+  particles.forEach(p     => { p.update(); p.draw(); });
   shootingStars.forEach(s => { s.update(); s.draw(); });
-
   animFrame = requestAnimationFrame(animateParticles);
 }
 
