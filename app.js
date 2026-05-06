@@ -126,8 +126,9 @@ const defs  = document.createElementNS('http://www.w3.org/2000/svg','defs');
 const grad  = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
 grad.id = 'ringGrad';
 grad.innerHTML = `
-  <stop offset="0%" stop-color="#b76e79"/>
-  <stop offset="100%" stop-color="#9b7fc7"/>
+  <stop offset="0%"   stop-color="#9b7fc7"/>
+  <stop offset="50%"  stop-color="#b76e79"/>
+  <stop offset="100%" stop-color="#c9a96e"/>
 `;
 defs.appendChild(grad);
 svgEl.insertBefore(defs, svgEl.firstChild);
@@ -916,22 +917,22 @@ document.getElementById('pomFullscreen').addEventListener('click', () => {
   }
 });
 
-// ── Close fullscreen ──
-function closeFs() {
-  stopFs();
-  fsOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-  stopParticles();
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {});
-  }
-}
+// // ── Close fullscreen ──
+// function closeFs() {
+//   stopFs();
+//   fsOverlay.classList.remove('active');
+//   document.body.style.overflow = '';
+//   stopParticles();
+//   if (document.fullscreenElement) {
+//     document.exitFullscreen().catch(() => {});
+//   }
+// }
 
-fsExit.addEventListener('click', closeFs);
+// fsExit.addEventListener('click', closeFs);
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
-});
+// document.addEventListener('keydown', e => {
+//   if (e.key === 'Escape' && fsOverlay.classList.contains('active')) closeFs();
+// });
 
 // ═══════════════════════════════════════
 // PARTICLE SYSTEM
@@ -1114,3 +1115,39 @@ function animateParticles() {
 }
 
 updateFsDisplay();
+
+// ═══════════════════════════════════════
+// EXIT BUTTON PROXIMITY REVEAL
+// ═══════════════════════════════════════
+const fsExitBtn = document.getElementById('fsExit');
+const PROXIMITY = 150;
+
+document.addEventListener('mousemove', e => {
+  if (!fsOverlay.classList.contains('active')) return;
+
+  // Button is fixed at top-right
+  const btnX = window.innerWidth  - 21; // center of button (42px wide, 1.5rem ≈ 24px from edge)
+  const btnY = 24 + 21;                 // 1.5rem from top + half height
+
+  const dx   = e.clientX - btnX;
+  const dy   = e.clientY - btnY;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist < PROXIMITY) {
+    fsExitBtn.classList.add('visible');
+  } else {
+    fsExitBtn.classList.remove('visible');
+  }
+});
+
+// Also hide it when overlay closes
+function closeFs() {
+  stopFs();
+  fsOverlay.classList.remove('active');
+  fsExitBtn.classList.remove('visible');
+  document.body.style.overflow = '';
+  stopParticles();
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
