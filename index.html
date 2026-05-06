@@ -106,34 +106,61 @@
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════ -->
-    <!-- POMODORO -->
-    <!-- ═══════════════════════════════════ -->
-    <section class="tool-panel" id="pomodoro">
-      <div class="panel-header">
-        <h2>Pomodoro Timer</h2>
-        <p>Stay focused, rest well</p>
+<!-- ═══════════════════════════════════════ -->
+<!-- POMODORO -->
+<!-- ═══════════════════════════════════════ -->
+<section class="tool-panel" id="pomodoro">
+  <div class="panel-header">
+    <h2>Pomodoro Timer</h2>
+    <p>Stay focused, rest well</p>
+  </div>
+  <div class="panel-body center-col">
+
+    <div class="pom-mode-btns">
+      <button class="pom-mode active" data-mins="25">Focus</button>
+      <button class="pom-mode" data-mins="5">Short Break</button>
+      <button class="pom-mode" data-mins="15">Long Break</button>
+      <button class="pom-mode" data-mins="custom">Custom</button>
+    </div>
+
+    <!-- Custom time input, hidden by default -->
+    <div class="custom-time-row" id="customTimeRow">
+      <div class="custom-time-inputs">
+        <div class="custom-time-field">
+          <input type="number" id="customHours" min="0" max="23" value="0" placeholder="0"/>
+          <label>hrs</label>
+        </div>
+        <div class="custom-time-sep">:</div>
+        <div class="custom-time-field">
+          <input type="number" id="customMins" min="0" max="59" value="0" placeholder="0"/>
+          <label>min</label>
+        </div>
+        <div class="custom-time-sep">:</div>
+        <div class="custom-time-field">
+          <input type="number" id="customSecs" min="0" max="59" value="0" placeholder="0"/>
+          <label>sec</label>
+        </div>
       </div>
-      <div class="panel-body center-col">
-        <div class="pom-mode-btns">
-          <button class="pom-mode active" data-mins="25">Focus</button>
-          <button class="pom-mode" data-mins="5">Short Break</button>
-          <button class="pom-mode" data-mins="15">Long Break</button>
-        </div>
-        <div class="clock-ring">
-          <svg viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="90" class="ring-bg"/>
-            <circle cx="100" cy="100" r="90" class="ring-progress" id="pomRing"/>
-          </svg>
-          <div class="clock-display" id="pomDisplay">25:00</div>
-        </div>
-        <div class="pom-controls">
-          <button class="tool-btn" id="pomStart">Start</button>
-          <button class="tool-btn secondary" id="pomReset">Reset</button>
-        </div>
-        <div class="pom-sessions">Sessions completed: <span id="pomSessions">0</span></div>
-      </div>
-    </section>
+      <button class="tool-btn" id="setCustomTime">Set ✦</button>
+    </div>
+
+    <div class="clock-ring">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="90" class="ring-bg"/>
+        <circle cx="100" cy="100" r="90" class="ring-progress" id="pomRing"/>
+      </svg>
+      <div class="clock-display" id="pomDisplay">25:00</div>
+    </div>
+
+    <div class="pom-controls">
+      <button class="tool-btn" id="pomStart">Start</button>
+      <button class="tool-btn secondary" id="pomReset">Reset</button>
+    </div>
+
+    <div class="pom-sessions">Sessions completed: <span id="pomSessions">0</span></div>
+
+  </div>
+</section>
 
     <!-- ═══════════════════════════════════ -->
     <!-- WORD COUNTER -->
