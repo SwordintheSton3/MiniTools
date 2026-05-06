@@ -1262,3 +1262,78 @@ select option {
   .calc-wrapper { max-width: 100%; }
   .metro-controls { justify-content: center; }
 }
+
+/* ═══════════════════════════════════════
+   CUSTOM TIME INPUT
+═══════════════════════════════════════ */
+.custom-time-row {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+  max-width: 360px;
+  animation: panelIn 0.3s ease both;
+}
+
+.custom-time-row.visible {
+  display: flex;
+}
+
+.custom-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-time-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.custom-time-field input {
+  width: 70px;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 300;
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--accent-soft);
+  /* hide arrows */
+  -moz-appearance: textfield;
+}
+
+.custom-time-field input::-webkit-outer-spin-button,
+.custom-time-field input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.custom-time-field input:focus {
+  border-color: var(--accent-rose);
+  box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15);
+  outline: none;
+}
+
+.custom-time-field label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.custom-time-sep {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  color: var(--accent-rose);
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
