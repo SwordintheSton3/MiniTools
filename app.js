@@ -149,8 +149,11 @@ function formatTime(totalSecs) {
 }
 
 function updatePomDisplay() {
+  // Safety check
+  if (isNaN(pomSeconds) || pomSeconds < 0) pomSeconds = 0;
+  if (isNaN(pomTotal) || pomTotal <= 0) pomTotal = pomSeconds || 1;
+
   pomDisplay.textContent = formatTime(pomSeconds);
-  // Shrink font slightly for longer times
   pomDisplay.style.fontSize = pomSeconds >= 3600 ? '2rem' : '3rem';
   const progress = pomTotal > 0 ? pomSeconds / pomTotal : 1;
   pomRing.style.strokeDasharray  = circumference;
