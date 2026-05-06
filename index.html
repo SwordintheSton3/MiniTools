@@ -527,10 +527,9 @@
     <!-- FULLSCREEN OVERLAY -->
   <div class="fs-overlay" id="fsOverlay">
     <canvas class="fs-particles" id="fsCanvas"></canvas>
+    <button class="fs-exit-btn" id="fsExit">✕</button>
   
     <div class="fs-content">
-  
-      <button class="fs-exit-btn" id="fsExit">✕</button>
   
       <div class="fs-ornament">✦</div>
       <div class="fs-title">Pomodoro Timer</div>
@@ -566,9 +565,12 @@
       <div class="fs-clock-ring">
         <svg viewBox="0 0 200 200">
           <defs>
-            <linearGradient id="fsRingGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#9b7fc7"/>
-              <stop offset="50%" stop-color="#b76e79"/>
+            <linearGradient id="fsRingGrad"
+              gradientUnits="userSpaceOnUse"
+              x1="100" y1="0" x2="100" y2="200">
+              <stop offset="0%"   stop-color="#c9a96e"/>
+              <stop offset="33%"  stop-color="#b76e79"/>
+              <stop offset="66%"  stop-color="#9b7fc7"/>
               <stop offset="100%" stop-color="#c9a96e"/>
             </linearGradient>
           </defs>
