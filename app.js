@@ -1153,6 +1153,789 @@ document.addEventListener('mousemove', e => {
 });
 
 // ═══════════════════════════════════════
+// CHORD TOOL
+// ═══════════════════════════════════════
+
+// ── Note data ──
+const ALL_NOTES  = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FLAT_NOTES = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+
+// Enharmonic map
+const ENHARMONIC = {
+  'C#':'Db','Db':'C#','D#':'Eb','Eb':'D#',
+  'F#':'Gb','Gb':'F#','G#':'Ab','Ab':'G#',
+  'A#':'Bb','Bb':'A#'
+};
+
+// Chord formulas (intervals in semitones from root)
+const CHORD_FORMULAS = {
+  // Triads
+  '':        { name: 'Major',           intervals: [0,4,7] },
+  'maj':     { name: 'Major',           intervals: [0,4,7] },
+  'M':       { name: 'Major',           intervals: [0,4,7] },
+  'm':       { name: 'Minor',           intervals: [0,3,7] },
+  'min':     { name: 'Minor',           intervals: [0,3,7] },
+  'dim':     { name: 'Diminished',      intervals: [0,3,6] },
+  'aug':     { name: 'Augmented',       intervals: [0,4,8] },
+  'sus2':    { name: 'Suspended 2nd',   intervals: [0,2,7] },
+  'sus4':    { name: 'Suspended 4th',   intervals: [0,5,7] },
+  '5':       { name: 'Power Chord',     intervals: [0,7] },
+  // 7th chords
+  '7':       { name: 'Dominant 7th',    intervals: [0,4,7,10] },
+  'maj7':    { name: 'Major 7th',       intervals: [0,4,7,11] },
+  'M7':      { name: 'Major 7th',       intervals: [0,4,7,11] },
+  'm7':      { name: 'Minor 7th',       intervals: [0,3,7,10] },
+  'min7':    { name: 'Minor 7th',       intervals: [0,3,7,10] },
+  'dim7':    { name: 'Diminished 7th',  intervals: [0,3,6,9] },
+  'm7b5':    { name: 'Half Diminished', intervals: [0,3,6,10] },
+  'ø7':      { name: 'Half Diminished', intervals: [0,3,6,10] },
+  'aug7':    { name: 'Augmented 7th',   intervals: [0,4,8,10] },
+  'augmaj7': { name: 'Augmented Maj7',  intervals: [0,4,8,11] },
+  'mmaj7':   { name: 'Minor Major 7th', intervals: [0,3,7,11] },
+  // 9th chords
+  '9':       { name: 'Dominant 9th',    intervals: [0,4,7,10,14] },
+  'maj9':    { name: 'Major 9th',       intervals: [0,4,7,11,14] },
+  'm9':      { name: 'Minor 9th',       intervals: [0,3,7,10,14] },
+  'add9':    { name: 'Add 9',           intervals: [0,4,7,14] },
+  'madd9':   { name: 'Minor Add 9',     intervals: [0,3,7,14] },
+  '6/9':     { name: 'Six Nine',        intervals: [0,4,7,9,14] },
+  // 11th chords
+  '11':      { name: 'Dominant 11th',   intervals: [0,4,7,10,14,17] },
+  'maj11':   { name: 'Major 11th',      intervals: [0,4,7,11,14,17] },
+  'm11':     { name: 'Minor 11th',      intervals: [0,3,7,10,14,17] },
+  // 13th chords
+  '13':      { name: 'Dominant 13th',   intervals: [0,4,7,10,14,17,21] },
+  'maj13':   { name: 'Major 13th',      intervals: [0,4,7,11,14,17,21] },
+  'm13':     { name: 'Minor 13th',      intervals: [0,3,7,10,14,17,21] },
+  // 6th chords
+  '6':       { name: 'Major 6th',       intervals: [0,4,7,9] },
+  'm6':      { name: 'Minor 6th',       intervals: [0,3,7,9] },
+  // Altered
+  '7b5':     { name: 'Dominant 7b5',    intervals: [0,4,6,10] },
+  '7#5':     { name: 'Dominant 7#5',    intervals: [0,4,8,10] },
+  '7b9':     { name: 'Dominant 7b9',    intervals: [0,4,7,10,13] },
+  '7#9':     { name: 'Dominant 7#9',    intervals: [0,4,7,10,15] },
+  '7#11':    { name: 'Lydian Dominant', intervals: [0,4,7,10,14,18] },
+  'alt':     { name: 'Altered',         intervals: [0,4,6,10,13,15] },
+};
+
+// Guitar voicings database [string6..string1] fret numbers, -1 = muted, 0 = open
+const GUITAR_VOICINGS = {
+  'C':  [
+    { frets:[-1,3,2,0,1,0], name:'Open C' },
+    { frets:[-1,3,2,0,1,3], name:'Open C (full)' },
+    { frets:[8,10,10,9,8,8], name:'Barre VIII' },
+  ],
+  'Cm': [
+    { frets:[-1,3,5,5,4,3], name:'Barre III' },
+    { frets:[8,10,10,8,8,8], name:'Barre VIII' },
+  ],
+  'C7': [
+    { frets:[-1,3,2,3,1,0], name:'Open C7' },
+    { frets:[8,10,8,9,8,8], name:'Barre VIII' },
+  ],
+  'Cmaj7': [
+    { frets:[-1,3,2,0,0,0], name:'Open Cmaj7' },
+    { frets:[8,10,9,9,8,8], name:'Barre VIII' },
+  ],
+  'Cm7': [
+    { frets:[-1,3,5,3,4,3], name:'Barre III' },
+    { frets:[8,10,8,8,8,8], name:'Barre VIII' },
+  ],
+  'Cdim': [
+    { frets:[-1,-1,1,2,1,2], name:'Cdim' },
+  ],
+  'Caug': [
+    { frets:[-1,-1,2,1,1,0], name:'Caug' },
+  ],
+  'Csus2': [
+    { frets:[-1,3,0,0,1,3], name:'Csus2' },
+  ],
+  'Csus4': [
+    { frets:[-1,3,3,0,1,1], name:'Csus4' },
+  ],
+  'D':  [
+    { frets:[-1,-1,0,2,3,2], name:'Open D' },
+    { frets:[-1,5,4,2,3,2], name:'Open D (full)' },
+    { frets:[10,12,12,11,10,10], name:'Barre X' },
+  ],
+  'Dm': [
+    { frets:[-1,-1,0,2,3,1], name:'Open Dm' },
+    { frets:[10,12,12,10,10,10], name:'Barre X' },
+  ],
+  'D7': [
+    { frets:[-1,-1,0,2,1,2], name:'Open D7' },
+    { frets:[10,12,10,11,10,10], name:'Barre X' },
+  ],
+  'Dmaj7': [
+    { frets:[-1,-1,0,2,2,2], name:'Open Dmaj7' },
+  ],
+  'Dm7': [
+    { frets:[-1,-1,0,2,1,1], name:'Open Dm7' },
+    { frets:[10,12,10,10,10,10], name:'Barre X' },
+  ],
+  'Dsus2': [
+    { frets:[-1,-1,0,2,3,0], name:'Dsus2' },
+  ],
+  'Dsus4': [
+    { frets:[-1,-1,0,2,3,3], name:'Dsus4' },
+  ],
+  'E':  [
+    { frets:[0,2,2,1,0,0], name:'Open E' },
+    { frets:[0,2,2,1,0,0], name:'Open E' },
+    { frets:[7,9,9,8,7,7], name:'Barre VII' },
+  ],
+  'Em': [
+    { frets:[0,2,2,0,0,0], name:'Open Em' },
+    { frets:[7,9,9,7,7,7], name:'Barre VII' },
+  ],
+  'E7': [
+    { frets:[0,2,0,1,0,0], name:'Open E7' },
+    { frets:[7,9,7,8,7,7], name:'Barre VII' },
+  ],
+  'Emaj7': [
+    { frets:[0,2,1,1,0,0], name:'Open Emaj7' },
+  ],
+  'Em7': [
+    { frets:[0,2,0,0,0,0], name:'Open Em7' },
+    { frets:[7,9,7,7,7,7], name:'Barre VII' },
+  ],
+  'F':  [
+    { frets:[1,3,3,2,1,1], name:'Barre I' },
+    { frets:[-1,-1,3,2,1,1], name:'Mini F' },
+    { frets:[8,10,10,9,8,8], name:'Barre VIII' },
+  ],
+  'Fm': [
+    { frets:[1,3,3,1,1,1], name:'Barre I' },
+  ],
+  'F7': [
+    { frets:[1,3,1,2,1,1], name:'Barre I' },
+  ],
+  'Fmaj7': [
+    { frets:[-1,-1,3,2,1,0], name:'Open Fmaj7' },
+    { frets:[1,3,2,2,1,1], name:'Barre I' },
+  ],
+  'Fm7': [
+    { frets:[1,3,1,1,1,1], name:'Barre I' },
+  ],
+  'G':  [
+    { frets:[3,2,0,0,0,3], name:'Open G' },
+    { frets:[3,2,0,0,3,3], name:'Open G (alt)' },
+    { frets:[3,5,5,4,3,3], name:'Barre III' },
+  ],
+  'Gm': [
+    { frets:[3,5,5,3,3,3], name:'Barre III' },
+  ],
+  'G7': [
+    { frets:[3,2,0,0,0,1], name:'Open G7' },
+    { frets:[3,5,3,4,3,3], name:'Barre III' },
+  ],
+  'Gmaj7': [
+    { frets:[3,2,0,0,0,2], name:'Open Gmaj7' },
+  ],
+  'Gm7': [
+    { frets:[3,5,3,3,3,3], name:'Barre III' },
+  ],
+  'A':  [
+    { frets:[-1,0,2,2,2,0], name:'Open A' },
+    { frets:[-1,0,2,2,2,2], name:'Open A (full)' },
+    { frets:[5,7,7,6,5,5], name:'Barre V' },
+  ],
+  'Am': [
+    { frets:[-1,0,2,2,1,0], name:'Open Am' },
+    { frets:[5,7,7,5,5,5], name:'Barre V' },
+  ],
+  'A7': [
+    { frets:[-1,0,2,0,2,0], name:'Open A7' },
+    { frets:[5,7,5,6,5,5], name:'Barre V' },
+  ],
+  'Amaj7': [
+    { frets:[-1,0,2,1,2,0], name:'Open Amaj7' },
+  ],
+  'Am7': [
+    { frets:[-1,0,2,0,1,0], name:'Open Am7' },
+    { frets:[5,7,5,5,5,5], name:'Barre V' },
+  ],
+  'Asus2': [
+    { frets:[-1,0,2,2,0,0], name:'Asus2' },
+  ],
+  'Asus4': [
+    { frets:[-1,0,2,2,3,0], name:'Asus4' },
+  ],
+  'B':  [
+    { frets:[-1,2,4,4,4,2], name:'Barre II' },
+    { frets:[7,9,9,8,7,7], name:'Barre VII' },
+  ],
+  'Bm': [
+    { frets:[-1,2,4,4,3,2], name:'Barre II' },
+    { frets:[7,9,9,7,7,7], name:'Barre VII' },
+  ],
+  'B7': [
+    { frets:[-1,2,1,2,0,2], name:'Open B7' },
+    { frets:[7,9,7,8,7,7], name:'Barre VII' },
+  ],
+  'Bmaj7': [
+    { frets:[-1,2,4,3,4,2], name:'Barre II' },
+  ],
+  'Bm7': [
+    { frets:[-1,2,4,2,3,2], name:'Barre II' },
+    { frets:[7,9,7,7,7,7], name:'Barre VII' },
+  ],
+};
+
+// Enharmonic aliases for voicings
+const VOICING_ALIASES = {
+  'Db':'C#','C#':'Db',
+  'Eb':'D#','D#':'Eb',
+  'Gb':'F#','F#':'Gb',
+  'Ab':'G#','G#':'Ab',
+  'Bb':'A#','A#':'Bb',
+};
+
+// For missing voicings, generate a barre chord
+function generateBarreVoicing(rootNote, suffix) {
+  const rootIdx  = getNoteIndex(rootNote);
+  // E-shape barre
+  const baseE    = { '':  [0,2,2,1,0,0], 'm':  [0,2,2,0,0,0],
+                     '7': [0,2,0,1,0,0], 'maj7':[0,2,1,1,0,0],
+                     'm7':[0,2,0,0,0,0], 'dim': [0,1,2,0,-1,-1],
+                     'sus2':[0,2,2,2,0,0],'sus4':[0,2,2,2,3,0] };
+  const baseA    = { '':  [-1,0,2,2,2,0], 'm':  [-1,0,2,2,1,0],
+                     '7': [-1,0,2,0,2,0], 'maj7':[-1,0,2,1,2,0],
+                     'm7':[-1,0,2,0,1,0] };
+
+  const eRoots   = ['E','F','F#','G','G#','A','A#','B','C','C#','D','D#'];
+  const aRoots   = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
+
+  const normalSuffix = suffix.replace('min','m').replace('M7','maj7');
+  const shape = baseE[normalSuffix] || baseE[''];
+  const eIdx  = eRoots.indexOf(ALL_NOTES[rootIdx]);
+  if (eIdx !== -1 && eIdx > 0) {
+    return [{ frets: shape.map(f => f === -1 ? -1 : f + eIdx), name: `Barre ${toRoman(eIdx)}` }];
+  }
+  const aShape = baseA[normalSuffix] || baseA[''];
+  const aIdx   = aRoots.indexOf(ALL_NOTES[rootIdx]);
+  if (aIdx !== -1) {
+    return [{ frets: aShape.map(f => f === -1 ? -1 : f + aIdx), name: `Barre ${toRoman(aIdx)}` }];
+  }
+  return [];
+}
+
+function toRoman(n) {
+  const vals = [10,'X',9,'IX',8,'VIII',7,'VII',6,'VI',5,'V',4,'IV',3,'III',2,'II',1,'I'];
+  let result = '';
+  for (let i = 0; i < vals.length; i += 2) {
+    while (n >= vals[i]) { result += vals[i+1]; n -= vals[i]; }
+  }
+  return result;
+}
+
+function getNoteIndex(note) {
+  let idx = ALL_NOTES.indexOf(note);
+  if (idx === -1) idx = FLAT_NOTES.indexOf(note);
+  return idx;
+}
+
+function transposeNote(note, semitones) {
+  const idx = getNoteIndex(note);
+  if (idx === -1) return note;
+  const newIdx = (idx + semitones + 12) % 12;
+  // Prefer flats for flat keys, sharps otherwise
+  const flatRoots = ['F','Bb','Eb','Ab','Db','Gb'];
+  if (flatRoots.some(r => note.includes('b') || semitones > 0)) {
+    return FLAT_NOTES[newIdx];
+  }
+  return ALL_NOTES[newIdx];
+}
+
+// ── Parse chord input ──
+function parseChord(input) {
+  input = input.trim();
+  if (!input) return null;
+
+  // Match root note (e.g. C, C#, Db, F#, Bb)
+  const rootMatch = input.match(/^([A-Ga-g][#b]?)/);
+  if (!rootMatch) return null;
+
+  let root = rootMatch[1];
+  // Capitalize
+  root = root.charAt(0).toUpperCase() + root.slice(1);
+
+  const suffix = input.slice(root.length);
+
+  // Find matching formula
+  let formula = CHORD_FORMULAS[suffix];
+
+  // Try case-insensitive
+  if (!formula) {
+    const lc = suffix.toLowerCase();
+    for (const key of Object.keys(CHORD_FORMULAS)) {
+      if (key.toLowerCase() === lc) {
+        formula = CHORD_FORMULAS[key];
+        break;
+      }
+    }
+  }
+
+  if (!formula) return null;
+
+  // Build notes from intervals
+  const rootIdx = getNoteIndex(root);
+  if (rootIdx === -1) return null;
+
+  // Decide sharp or flat
+  const useFlats = ['F','Bb','Eb','Ab','Db','Gb'].includes(root) ||
+                   root.includes('b');
+
+  const notes = formula.intervals.map(interval => {
+    const noteIdx = (rootIdx + interval) % 12;
+    return useFlats ? FLAT_NOTES[noteIdx] : ALL_NOTES[noteIdx];
+  });
+
+  return {
+    root,
+    suffix,
+    fullName: root + suffix,
+    chordTypeName: formula.name,
+    intervals: formula.intervals,
+    notes,
+  };
+}
+
+// ── Get voicings for chord ──
+function getVoicings(root, suffix) {
+  const key  = root + suffix;
+  let voicings = GUITAR_VOICINGS[key];
+
+  if (!voicings) {
+    // Try enharmonic equivalent
+    const alt = VOICING_ALIASES[root];
+    if (alt) voicings = GUITAR_VOICINGS[alt + suffix];
+  }
+
+  if (!voicings || voicings.length === 0) {
+    voicings = generateBarreVoicing(root, suffix);
+  }
+
+  return voicings || [];
+}
+
+// ── Build piano ──
+function buildPiano(chordNotes, rootNote) {
+  const piano = document.getElementById('piano');
+  piano.innerHTML = '';
+
+  // Two octaves of white keys: C D E F G A B (14 white keys)
+  const whitePattern = [
+    {note:'C',oct:4}, {note:'D',oct:4}, {note:'E',oct:4},
+    {note:'F',oct:4}, {note:'G',oct:4}, {note:'A',oct:4}, {note:'B',oct:4},
+    {note:'C',oct:5}, {note:'D',oct:5}, {note:'E',oct:5},
+    {note:'F',oct:5}, {note:'G',oct:5}, {note:'A',oct:5}, {note:'B',oct:5},
+  ];
+
+  const blackPattern = [
+    {note:'C#',offset:1},{note:'D#',offset:2},
+    {note:'F#',offset:4},{note:'G#',offset:5},{note:'A#',offset:6},
+    {note:'C#',offset:8},{note:'D#',offset:9},
+    {note:'F#',offset:11},{note:'G#',offset:12},{note:'A#',offset:13},
+  ];
+
+  const whiteKeyWidth = 37; // px
+
+  // Container
+  const container = document.createElement('div');
+  container.style.position = 'relative';
+  container.style.width    = `${whitePattern.length * whiteKeyWidth}px`;
+  container.style.height   = '140px';
+
+  // White keys
+  whitePattern.forEach((k, i) => {
+    const key = document.createElement('div');
+    key.className = 'piano-key white';
+    key.style.position = 'absolute';
+    key.style.left     = `${i * whiteKeyWidth}px`;
+    key.style.width    = `${whiteKeyWidth - 1}px`;
+
+    const isActive = chordNotes.some(n => {
+      const ni = getNoteIndex(n);
+      const ki = getNoteIndex(k.note);
+      return ni !== -1 && ki !== -1 && ni === ki;
+    });
+    const isRoot = getNoteIndex(k.note) === getNoteIndex(rootNote);
+
+    if (isRoot && isActive) key.classList.add('root-key');
+    else if (isActive)      key.classList.add('active');
+
+    container.appendChild(key);
+  });
+
+  // Black keys
+  blackPattern.forEach(k => {
+    const key = document.createElement('div');
+    key.className = 'piano-key black';
+    key.style.left = `${k.offset * whiteKeyWidth - 11}px`;
+
+    const enharmonic = ENHARMONIC[k.note] || '';
+    const isActive   = chordNotes.some(n => {
+      const ni = getNoteIndex(n);
+      const ki = getNoteIndex(k.note);
+      return ni !== -1 && ki !== -1 && ni === ki;
+    });
+    const isRoot = getNoteIndex(k.note) === getNoteIndex(rootNote) ||
+                   getNoteIndex(enharmonic) === getNoteIndex(rootNote);
+
+    if (isRoot && isActive) key.classList.add('root-key');
+    else if (isActive)      key.classList.add('active');
+
+    container.appendChild(key);
+  });
+
+  piano.appendChild(container);
+}
+
+// ── Build fretboard ──
+let currentVoicingIndex = 0;
+
+function buildFretboard(voicings, chordData) {
+  if (!voicings.length) {
+    document.getElementById('fretboard').innerHTML =
+      '<p style="color:var(--text-muted);text-align:center;padding:1rem">No voicing found</p>';
+    return;
+  }
+
+  // Build voicing tabs
+  const voicingTabs = document.getElementById('voicingTabs');
+  voicingTabs.innerHTML = '';
+  voicings.forEach((v, i) => {
+    const tab = document.createElement('button');
+    tab.className  = 'voicing-tab' + (i === currentVoicingIndex ? ' active' : '');
+    tab.textContent = v.name;
+    tab.addEventListener('click', () => {
+      currentVoicingIndex = i;
+      document.querySelectorAll('.voicing-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderFretboard(voicings[i], chordData);
+    });
+    voicingTabs.appendChild(tab);
+  });
+
+  renderFretboard(voicings[currentVoicingIndex], chordData);
+}
+
+function renderFretboard(voicing, chordData) {
+  const fretboard = document.getElementById('fretboard');
+  const fretCount = parseInt(document.getElementById('fretCount').value);
+  const tuningStr = document.getElementById('guitarTuning').value;
+  const tuning    = tuningStr.split(',').reverse(); // string 1 (high E) to string 6 (low E)
+
+  document.getElementById('voicingName').textContent = voicing.name;
+
+  // Find starting fret
+  const playedFrets = voicing.frets.filter(f => f > 0);
+  const minFret     = playedFrets.length ? Math.min(...playedFrets) : 1;
+  const startFret   = minFret <= 1 ? 1 : minFret;
+
+  fretboard.innerHTML = '';
+
+  // Inlay positions (standard guitar dots)
+  const inlayFrets = [3,5,7,9,12,15,17,19];
+
+  // Build string rows (string 6 = low E at top)
+  const stringsContainer = document.createElement('div');
+  stringsContainer.className = 'fretboard-strings';
+
+  // Reversed so low string is at top visually
+  const reversedFrets   = [...voicing.frets];
+  const reversedTuning  = [...tuning].reverse();
+
+  reversedFrets.forEach((fretNum, strIdx) => {
+    const row = document.createElement('div');
+    row.className = 'fret-row';
+
+    // String label
+    const label = document.createElement('div');
+    label.className   = 'string-name';
+    label.textContent = reversedTuning[strIdx];
+    row.appendChild(label);
+
+    // Open/muted indicator before fret 1
+    const openCell = document.createElement('div');
+    openCell.className = 'fret-cell';
+    openCell.style.maxWidth = '30px';
+    openCell.style.borderRight = 'none';
+
+    if (fretNum === -1) {
+      const dot = document.createElement('div');
+      dot.className   = 'fret-dot muted';
+      dot.textContent = '✕';
+      openCell.appendChild(dot);
+    } else if (fretNum === 0) {
+      const dot = document.createElement('div');
+      dot.className   = 'fret-dot open';
+      dot.textContent = '○';
+
+      // Check if open string note is in chord
+      const openNote   = reversedTuning[strIdx];
+      const noteInChord = chordData.notes.some(n =>
+        getNoteIndex(n) === getNoteIndex(openNote)
+      );
+      const isRoot = getNoteIndex(openNote) === getNoteIndex(chordData.root);
+      if (isRoot)       dot.classList.add('root-dot');
+      else if (noteInChord) dot.classList.add('note');
+
+      openCell.appendChild(dot);
+    }
+    row.appendChild(openCell);
+
+    // Fret cells
+    for (let f = startFret; f < startFret + fretCount; f++) {
+      const cell = document.createElement('div');
+      cell.className = 'fret-cell';
+
+      const stringLine = document.createElement('div');
+      stringLine.className = 'string-line';
+      cell.appendChild(stringLine);
+
+      if (fretNum === f) {
+        // Get the actual note at this position
+        const openNoteIdx  = getNoteIndex(reversedTuning[strIdx]);
+        const frettedNoteIdx = (openNoteIdx + f) % 12;
+        const isRoot = frettedNoteIdx === getNoteIndex(chordData.root);
+
+        const dot = document.createElement('div');
+        dot.className   = isRoot ? 'fret-dot root-dot' : 'fret-dot note';
+        dot.textContent = isRoot ? 'R' : '';
+        cell.appendChild(dot);
+      }
+
+      row.appendChild(cell);
+    }
+
+    stringsContainer.appendChild(row);
+  });
+
+  fretboard.appendChild(stringsContainer);
+
+  // Fret numbers row
+  const fretNumsRow = document.createElement('div');
+  fretNumsRow.className = 'fret-numbers';
+  fretNumsRow.style.marginLeft = '58px'; // label + open cell
+
+  for (let f = startFret; f < startFret + fretCount; f++) {
+    const num = document.createElement('div');
+    num.className   = 'fret-number';
+    num.textContent = f;
+    fretNumsRow.appendChild(num);
+  }
+  fretboard.appendChild(fretNumsRow);
+
+  // Inlay dots
+  const inlayRow = document.createElement('div');
+  inlayRow.className = 'fretboard-inlays';
+  inlayRow.style.left = '58px';
+
+  for (let f = startFret; f < startFret + fretCount; f++) {
+    const cell = document.createElement('div');
+    cell.className = 'inlay-cell';
+    if (inlayFrets.includes(f)) {
+      const dot = document.createElement('div');
+      dot.className = 'inlay-dot';
+      cell.appendChild(dot);
+    }
+    inlayRow.appendChild(cell);
+  }
+  fretboard.appendChild(inlayRow);
+}
+
+// ── Related chords ──
+function buildRelatedChords(root) {
+  const rootIdx = getNoteIndex(root);
+  const useFlats = ['F','Bb','Eb','Ab','Db','Gb'].includes(root) || root.includes('b');
+
+  // Build a major scale from root
+  const majorScale = [0,2,4,5,7,9,11].map(i => {
+    const ni = (rootIdx + i) % 12;
+    return useFlats ? FLAT_NOTES[ni] : ALL_NOTES[ni];
+  });
+
+  // Diatonic chords: I, ii, iii, IV, V, vi, vii°
+  const diatonicSuffixes = ['','m','m','','','m','dim'];
+  const diatonicNames    = ['I','ii','iii','IV','V','vi','vii°'];
+
+  const grid = document.getElementById('relatedChordsGrid');
+  grid.innerHTML = '';
+
+  majorScale.forEach((note, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'related-chord-btn';
+    btn.innerHTML = `${note}${diatonicSuffixes[i]}<br><small>${diatonicNames[i]}</small>`;
+    btn.addEventListener('click', () => {
+      document.getElementById('chordInput').value = note + diatonicSuffixes[i];
+      handleChordInput(note + diatonicSuffixes[i]);
+    });
+    grid.appendChild(btn);
+  });
+
+  // Also add V7
+  const v7Note = majorScale[4];
+  const v7btn  = document.createElement('button');
+  v7btn.className = 'related-chord-btn';
+  v7btn.innerHTML = `${v7Note}7<br><small>V7</small>`;
+  v7btn.addEventListener('click', () => {
+    document.getElementById('chordInput').value = v7Note + '7';
+    handleChordInput(v7Note + '7');
+  });
+  grid.appendChild(v7btn);
+}
+
+// ── Suggestions ──
+const COMMON_SUFFIXES = [
+  '','m','7','maj7','m7','dim','aug','sus2','sus4',
+  '9','maj9','m9','6','m6','dim7','m7b5','add9','5',
+  '11','13','7b9','7#9','mmaj7','augmaj7'
+];
+
+function showSuggestions(input) {
+  const sugBox = document.getElementById('chordSuggestions');
+  sugBox.innerHTML = '';
+  if (!input || input.length < 1) return;
+
+  const rootMatch = input.match(/^([A-Ga-g][#b]?)/);
+  if (!rootMatch) return;
+
+  const root   = rootMatch[1].charAt(0).toUpperCase() + rootMatch[1].slice(1);
+  const typed  = input.slice(root.length).toLowerCase();
+
+  const matches = COMMON_SUFFIXES
+    .filter(s => s.toLowerCase().startsWith(typed))
+    .slice(0, 6);
+
+  if (!matches.length || (matches.length === 1 && matches[0].toLowerCase() === typed)) {
+    return;
+  }
+
+  matches.forEach(s => {
+    const formula = CHORD_FORMULAS[s];
+    if (!formula) return;
+    const item = document.createElement('div');
+    item.className = 'chord-suggestion-item';
+    item.innerHTML = `
+      <span class="sugg-name">${root}${s}</span>
+      <span class="sugg-type">${formula.name}</span>
+    `;
+    item.addEventListener('click', () => {
+      document.getElementById('chordInput').value = root + s;
+      sugBox.innerHTML = '';
+      handleChordInput(root + s);
+    });
+    sugBox.appendChild(item);
+  });
+}
+
+// ── Main handler ──
+function handleChordInput(value) {
+  const chord = parseChord(value);
+
+  if (!chord) {
+    document.getElementById('chordInfo').style.display           = 'none';
+    document.getElementById('chordVisualSection').style.display  = 'none';
+    document.getElementById('chordTransposeRow').style.display   = 'none';
+    document.getElementById('relatedChordsSection').style.display = 'none';
+    return;
+  }
+
+  // Show chord info
+  document.getElementById('chordInfo').style.display           = 'flex';
+  document.getElementById('chordVisualSection').style.display  = 'block';
+  document.getElementById('chordTransposeRow').style.display   = 'block';
+  document.getElementById('relatedChordsSection').style.display = 'block';
+
+  document.getElementById('chordNameDisplay').textContent = chord.fullName;
+  document.getElementById('chordFormula').textContent     = chord.chordTypeName;
+
+  // Note pills
+  const notesRow = document.getElementById('chordNotesRow');
+  notesRow.innerHTML = '';
+  chord.notes.forEach((note, i) => {
+    const pill = document.createElement('div');
+    pill.className   = 'chord-note-pill' + (i === 0 ? ' root' : '');
+    pill.textContent = note;
+    notesRow.appendChild(pill);
+  });
+
+  // Piano
+  buildPiano(chord.notes, chord.root);
+
+  // Fretboard
+  currentVoicingIndex = 0;
+  const voicings = getVoicings(chord.root, chord.suffix);
+  buildFretboard(voicings, chord);
+
+  // Transposition
+  updateTransposition(chord);
+
+  // Related chords
+  buildRelatedChords(chord.root);
+}
+
+// ── Transposition ──
+function updateTransposition(chord) {
+  const semitones = parseInt(document.getElementById('transposeInstrument').value);
+  const resultDiv = document.getElementById('transposedResult');
+
+  if (semitones === 0) {
+    resultDiv.style.display = 'none';
+    return;
+  }
+
+  resultDiv.style.display = 'flex';
+  const newRoot = transposeNote(chord.root, semitones);
+  document.getElementById('transposedChord').textContent = newRoot + chord.suffix;
+}
+
+// ── Event listeners ──
+const chordInputEl = document.getElementById('chordInput');
+
+chordInputEl.addEventListener('input', e => {
+  showSuggestions(e.target.value);
+  handleChordInput(e.target.value);
+});
+
+chordInputEl.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('chordSuggestions').innerHTML = '';
+  }
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.chord-search-wrap')) {
+    document.getElementById('chordSuggestions').innerHTML = '';
+  }
+});
+
+document.getElementById('transposeInstrument').addEventListener('change', () => {
+  const chord = parseChord(chordInputEl.value);
+  if (chord) updateTransposition(chord);
+});
+
+document.getElementById('fretCount').addEventListener('input', e => {
+  document.getElementById('fretCountLabel').textContent = e.target.value;
+  const chord = parseChord(chordInputEl.value);
+  if (chord) {
+    const voicings = getVoicings(chord.root, chord.suffix);
+    if (voicings.length) renderFretboard(voicings[currentVoicingIndex], chord);
+  }
+});
+
+document.getElementById('guitarTuning').addEventListener('change', () => {
+  const chord = parseChord(chordInputEl.value);
+  if (chord) {
+    const voicings = getVoicings(chord.root, chord.suffix);
+    if (voicings.length) renderFretboard(voicings[currentVoicingIndex], chord);
+  }
+});
+
+// ═══════════════════════════════════════
 // BASE CONVERTER
 // ═══════════════════════════════════════
 const baseFrom        = document.getElementById('baseFrom');
