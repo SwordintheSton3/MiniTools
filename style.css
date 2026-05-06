@@ -1286,8 +1286,10 @@ select option {
 
 .custom-time-inputs {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: center;
   gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .custom-time-field {
@@ -1295,6 +1297,7 @@ select option {
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .custom-time-field input {
@@ -1308,13 +1311,13 @@ select option {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--accent-soft);
-  /* hide arrows */
   -moz-appearance: textfield;
 }
 
 .custom-time-field input::-webkit-outer-spin-button,
 .custom-time-field input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  margin: 0;
 }
 
 .custom-time-field input:focus {
@@ -1334,6 +1337,7 @@ select option {
   font-family: 'Cormorant Garamond', serif;
   font-size: 2rem;
   color: var(--accent-rose);
-  margin-bottom: 1rem;
   opacity: 0.6;
+  align-self: center;
+  margin-bottom: 1.5rem;
 }
