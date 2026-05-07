@@ -1627,12 +1627,16 @@ select option {
   letter-spacing: 0.05em;
 }
 
+#piano {
+  min-height: 150px;
+  position: relative;
+}
+
 /* ── Chord info ── */
 .chord-info-row {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .chord-name-display {
