@@ -2041,13 +2041,6 @@ select option {
   justify-content: center;
 }
 
-.fretboard-strings {
-  transform: rotate(180deg);
-}
-
-.fret-row {
-  transform: rotate(180deg);
-}
 /* ═══════════════════════════════════════
    BASE CONVERTER
 ═══════════════════════════════════════ */
