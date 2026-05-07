@@ -1547,6 +1547,8 @@ function buildPiano(chordNotes, rootNote) {
   container.style.position = 'relative';
   container.style.width    = `${whitePattern.length * whiteKeyWidth}px`;
   container.style.height   = '140px';
+    
+  piano.style.height = '150px';
 
   // White keys
   whitePattern.forEach((k, i) => {
