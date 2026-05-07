@@ -2066,3 +2066,8 @@ document.getElementById('asciiCharInput').addEventListener('input', e => {
   document.getElementById('asciiHex').textContent = code.toString(16).toUpperCase().padStart(2, '0');
   document.getElementById('asciiBin').textContent = code.toString(2).padStart(8, '0');
 });
+
+// DEBUG
+console.log('chord input el:', document.getElementById('chordInput'));
+console.log('chord info el:', document.getElementById('chordInfo'));
+console.log('parse test:', parseChord('Cm7'));
