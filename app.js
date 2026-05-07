@@ -1613,8 +1613,8 @@ function renderFretboard(voicing, chordData) {
   stringsContainer.className = 'fretboard-strings';
 
   // Reverse so low E (string 6) is at top visually
-  const reversedFrets  = [...voicing.frets];
-  const reversedTuning = [...tuning];
+  const reversedFrets  = [...voicing.frets].Reverse();
+  const reversedTuning = [...tuning].Reverse();
 
   reversedFrets.forEach((fretNum, strIdx) => {
     const row = document.createElement('div');
