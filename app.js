@@ -1734,8 +1734,9 @@ function renderFretboard(voicing, chordData) {
   // Inlay dots
   const inlayRow = document.createElement('div');
   inlayRow.className = 'fretboard-inlays';
-  inlayRow.style.left = '58px';
-
+  inlayRow.style.marginLeft = '58px';
+  inlayRow.style.position = 'relative';
+  
   for (let f = startFret; f < startFret + fretCount; f++) {
     const cell = document.createElement('div');
     cell.className = 'inlay-cell';
