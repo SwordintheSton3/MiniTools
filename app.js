@@ -2050,97 +2050,390 @@ console.log('parse test:',     parseChord('Cm7'));
 // ═══════════════════════════════════════
 // WOODWIND FINGERING SYSTEM
 // ═══════════════════════════════════════
+// Hole array structure:
+// [0] = LH thumb (open hole / half hole for some altissimo)
+// [1] = LH1 (index)
+// [2] = LH2 (middle)  
+// [3] = LH3 (ring)
+// [4] = RH1 (index)
+// [5] = RH2 (middle)
+// [6] = RH3 (ring)
+// [7] = RH4 (pinky/spatula area)
+//
+// lKeys: left hand side keys pressed
+//   'Eb'    = Eb/Ab spatula (LH pinky)
+//   'Ab'    = same key, alias
+//   'F'     = F/C throat key
+//   'E'     = E/B throat key  
+//   'Fsharp'= F#/C# throat key
+//   'A'     = A/E side trill
+//
+// rKeys: right hand side keys pressed
+//   'Fsharp' = F#/C# side trill (RH side)
+//   'Bb'     = Bb/Eb side key (RH side)  
+//   'G#'     = G#/D# spatula (RH pinky)
+//   'B'      = B/F# trill key
+//
+// register: boolean — speaker/register key (left thumb key, back)
+
 const CLARINET_FINGERINGS = {
-  // ── Chalumeau register (register key OFF) ──
 
-  // E3: All main holes closed, throat keys closed
-  'E3':  { holes:['c','c','c','c','c','c','c','c'], lKeys:[], rKeys:[], register:false },
+  // ══════════════════════════════════
+  // CHALUMEAU REGISTER (low notes)
+  // register = false
+  // ══════════════════════════════════
 
-  // F3: RH4 open
-  'F3':  { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:false },
+  // E3 — all main holes closed
+  'E3':  {
+    holes:    ['c','c','c','c','c','c','c','c'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // F#3/Gb3: RH3 open, RH4 closed
-  'F#3': { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:false },
-  'Gb3': { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:false },
+  // F3 — RH pinky (bottom spatula) up
+  'F3':  {
+    holes:    ['c','c','c','c','c','c','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // G3: RH3 and RH4 open
-  'G3':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:false },
+  // F#3/Gb3 — RH ring up
+  'F#3': {
+    holes:    ['c','c','c','c','c','c','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
+  'Gb3': {
+    holes:    ['c','c','c','c','c','c','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // G#3/Ab3: G3 fingering + side G# key
-  'G#3': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'Ab3': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  // G3 — RH middle up
+  'G3':  {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // A3: LH1+LH2+LH3+RH1 closed, RH2+RH3+RH4 open
-  'A3':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // G#3/Ab3 — G3 + Eb spatula (LH pinky side key)
+  'G#3': {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: false
+  },
+  'Ab3': {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: false
+  },
 
-  // Bb3/A#3: A3 fingering + side Bb key (long Bb)
-  'Bb3': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:false },
-  'A#3': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:false },
+  // A3 — RH index up (LH all closed, RH1 up)
+  'A3':  {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // B3: LH1+LH2+LH3 closed, RH1 open, rest open
-  'B3':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // Bb3/A#3 — A3 + Bb side key (RH side)
+  'Bb3': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Bb'],
+    register: false
+  },
+  'A#3': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Bb'],
+    register: false
+  },
 
-  // C4: LH1+LH2 closed, rest open (throat C)
-  'C4':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // B3 — LH ring up, all RH open
+  'B3':  {
+    holes:    ['c','c','c','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // C#4/Db4: LH1 only closed (throat C#)
-  'C#4': { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'Db4': { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // C4 (throat C) — LH middle up
+  'C4':  {
+    holes:    ['c','c','o','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // D4: all open, use side trill key or standard
-  // Standard D4: LH1+LH2+LH3 + RH1+RH2+RH3 closed (fork fingering)
-  'D4':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:false },
-  // Note: D4 is typically played with register key OFF using the same fingering as D5 but no register
+  // C#4/Db4 (throat C#) — LH index only
+  'C#4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Fsharp'],
+    rKeys:    [],
+    register: false
+  },
+  'Db4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Fsharp'],
+    rKeys:    [],
+    register: false
+  },
 
-  // D#4/Eb4: Like D4 but add Eb/D# side key
-  'D#4': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'Eb4': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  // D4 (throat D) — LH index + F/C throat key
+  'D4':  {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F'],
+    rKeys:    [],
+    register: false
+  },
 
-  // E4: LH1+LH2+LH3+RH1 closed, RH2+ open
-  'E4':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // D#4/Eb4 — throat D# 
+  'D#4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F','E'],
+    rKeys:    [],
+    register: false
+  },
+  'Eb4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F','E'],
+    rKeys:    [],
+    register: false
+  },
 
-  // F4: LH1+LH2+LH3 closed, all RH open
-  'F4':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // E4 — fork fingering (LH all closed, RH1 closed, RH2 open, RH3 closed)
+  'E4':  {
+    holes:    ['c','c','c','c','c','o','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // F#4/Gb4: F4 + side F# key
-  'F#4': { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:false },
-  'Gb4': { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:false },
+  // F4 — LH all closed, RH1 open, RH2-3 closed (fork)
+  // Actually: LH1+2+3, RH1 closed, rest open is the standard fork
+  'F4':  {
+    holes:    ['c','c','c','c','o','c','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // G4: LH1+LH2 closed, rest open
-  'G4':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  // F#4/Gb4 — F# side key only
+  'F#4': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Fsharp'],
+    register: false
+  },
+  'Gb4': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Fsharp'],
+    register: false
+  },
 
-  // G#4/Ab4: LH1 closed + G# key
-  'G#4': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'Ab4': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  // G4 — all open (just LH thumb closed)
+  'G4':  {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: false
+  },
 
-  // ── Clarion register (register key ON) ──
-  // These mirror the chalumeau fingerings but with register:true
-  // The register key (thumb hole vented) raises pitch a 12th
+  // G#4/Ab4 — G4 + Eb spatula
+  'G#4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: false
+  },
+  'Ab4': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: false
+  },
 
-  'A4':  { holes:['c','c','c','c','c','c','c','c'], lKeys:[], rKeys:[], register:true },
-  'Bb4': { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:true },
-  'A#4': { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:true },
-  'B4':  { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:true },
-  'C5':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:true },
-  'C#5': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
-  'Db5': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
-  'D5':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'D#5': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'Eb5': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'E5':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'F5':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'F#5': { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:true },
-  'Gb5': { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:true },
-  'G5':  { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'G#5': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
-  'Ab5': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
+  // ══════════════════════════════════
+  // CLARION REGISTER (middle octave)
+  // register = true  (speaker key open)
+  // These are the chalumeau fingerings + register key
+  // Clarinet overblows a 12th, so:
+  //   E3 fingering + register = B4
+  //   F3 + register = C5  etc.
+  // ══════════════════════════════════
 
-  // Upper clarion / altissimo begins around A5
-  'A5':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'Bb5': { holes:['c','c','c','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'A#5': { holes:['c','c','c','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'B5':  { holes:['c','c','o','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'C6':  { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  // B4 = E3 + register
+  'B4':  {
+    holes:    ['c','c','c','c','c','c','c','c'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // C5 = F3 + register
+  'C5':  {
+    holes:    ['c','c','c','c','c','c','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // C#5/Db5 = F#3 + register
+  'C#5': {
+    holes:    ['c','c','c','c','c','c','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+  'Db5': {
+    holes:    ['c','c','c','c','c','c','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // D5 = G3 + register
+  'D5':  {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // D#5/Eb5 = G#3 + register
+  'D#5': {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: true
+  },
+  'Eb5': {
+    holes:    ['c','c','c','c','c','o','o','o'],
+    lKeys:    ['Eb'],
+    rKeys:    [],
+    register: true
+  },
+
+  // E5 = A3 + register
+  'E5':  {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // F5 = Bb3 + register
+  'F5':  {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Bb'],
+    register: true
+  },
+
+  // F#5/Gb5 = B3 + register
+  'F#5': {
+    holes:    ['c','c','c','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+  'Gb5': {
+    holes:    ['c','c','c','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // G5 = C4 + register
+  'G5':  {
+    holes:    ['c','c','o','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // G#5/Ab5 = C#4 + register
+  'G#5': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Fsharp'],
+    rKeys:    [],
+    register: true
+  },
+  'Ab5': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['Fsharp'],
+    rKeys:    [],
+    register: true
+  },
+
+  // A5 = D4 + register
+  'A5':  {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F'],
+    rKeys:    [],
+    register: true
+  },
+
+  // Bb5/A#5 = D#4 + register
+  'Bb5': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F','E'],
+    rKeys:    [],
+    register: true
+  },
+  'A#5': {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    ['F','E'],
+    rKeys:    [],
+    register: true
+  },
+
+  // B5 = E4 + register
+  'B5':  {
+    holes:    ['c','c','c','c','c','o','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // C6 = F4 + register
+  'C6':  {
+    holes:    ['c','c','c','c','o','c','c','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
+
+  // C#6/Db6 = F#4 + register
+  'C#6': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Fsharp'],
+    register: true
+  },
+  'Db6': {
+    holes:    ['c','c','c','c','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    ['Fsharp'],
+    register: true
+  },
+
+  // D6 = G4 + register
+  'D6':  {
+    holes:    ['c','o','o','o','o','o','o','o'],
+    lKeys:    [],
+    rKeys:    [],
+    register: true
+  },
 };
 
 function getFingering(noteName, octave) {
@@ -2188,178 +2481,292 @@ function isWoodwind() {
 }
 
 function drawClarinetSVG(fingering, noteName, octave, isRoot, isSax) {
+
+  // ── Colour palette ──────────────────────────────────────────────
+  const closedFill   = isRoot ? '#c9a96e' : '#b76e79';
+  const closedStroke = isRoot ? 'rgba(201,169,110,0.8)' : 'rgba(183,110,121,0.8)';
+  const openFill     = 'rgba(255,255,255,0.07)';
+  const openStroke   = isRoot ? 'rgba(201,169,110,0.45)' : 'rgba(183,110,121,0.35)';
+  const keyFill      = isRoot ? '#c9a96e' : '#b76e79';
+  const keyStroke    = isRoot ? 'rgba(201,169,110,0.6)' : 'rgba(183,110,121,0.5)';
+  const bodyStroke   = 'rgba(155,127,199,0.3)';
+  const labelColor   = isRoot ? '#c9a96e' : '#e8c4c4';
+
+  // ── Layout ──────────────────────────────────────────────────────
+  // viewBox: 90 wide × 300 tall
+  // Body tube centred at x=45, width=18
+  // Left side keys extend LEFT  (x < 36)
+  // Right side keys extend RIGHT (x > 54)
+
+  const W   = 90;
+  const H   = 300;
+  const cx  = 45;      // tube centre x
+  const tw  = 18;      // tube width
+  const tx  = cx - tw/2; // tube left edge = 36
+  const trx = tx + tw;   // tube right edge = 54
+
+  // ── Y positions (top → bottom) ─────────────────────────────────
+  // Thumb key area
+  const thumbY    = 32;   // LH thumb open hole
+  const regKeyY   = 22;   // register/speaker key (small, above thumb)
+
+  // LH holes 1-3
+  const lh1Y = 68;
+  const lh2Y = 91;
+  const lh3Y = 114;
+
+  // LH side key cluster (between LH3 and RH1)
+  const lhSideY = 136; // Eb spatula, F throat, E/B, F#/C# throat keys
+
+  // RH holes 1-3
+  const rh1Y = 160;
+  const rh2Y = 183;
+  const rh3Y = 206;
+
+  // RH side key cluster (below RH3)
+  const rhSideY = 228; // F#/C# side trill, B/F# trill, Bb/Eb key
+
+  // Bell region
+  const bellTop = 250;
+  const bellBot = H - 8;
+
+  // Hole radii
+  const mainR  = 7;   // LH1-3, RH1-3
+  const thumbR = 6;   // thumb hole
+  const regR   = 4;   // register key
+  const sideR  = 4;   // side/trill key circles
+  const spatW  = 14;  // spatula key width
+  const spatH  = 7;   // spatula key height
+
   if (!fingering) {
-    return `<svg viewBox="0 0 70 240" width="70" height="240" 
+    return `<svg viewBox="0 0 ${W} ${H}" width="90" height="300"
       xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="4" width="62" height="232" rx="6" fill="none"
-        stroke="rgba(183,110,121,0.2)" stroke-width="1"/>
-      <text x="35" y="125" text-anchor="middle" font-size="9"
+      <rect x="5" y="5" width="${W-10}" height="${H-10}" rx="6"
+        fill="none" stroke="rgba(183,110,121,0.15)" stroke-width="1"/>
+      <text x="${cx}" y="150" text-anchor="middle" font-size="9"
         fill="#7a6085" font-family="Raleway,sans-serif">no fingering</text>
     </svg>`;
   }
 
-  const h          = fingering.holes; // [LH1, LH2, LH3, RH1, RH2, RH3, RH4(pinky)]
-  const reg        = fingering.register;
-  const isSaxFlag  = isSax;
+  const h    = fingering.holes;   // [thumb, LH1, LH2, LH3, RH1, RH2, RH3, RH4-area]
+  const lK   = fingering.lKeys;
+  const rK   = fingering.rKeys;
+  const reg  = fingering.register;
 
-  // Colours depending on root vs chord tone
-  const closedFill  = isRoot ? '#c9a96e' : '#b76e79';
-  const closedGlow  = isRoot ? 'rgba(201,169,110,0.55)' : 'rgba(183,110,121,0.55)';
-  const openFill    = 'rgba(255,255,255,0.05)';
-  const openStroke  = isRoot ? 'rgba(201,169,110,0.5)' : 'rgba(183,110,121,0.35)';
-  const bodyStroke  = isSaxFlag ? '#c9a96e' : '#9b7fc7';
-
-  // Layout constants
-  const W        = 70;   // viewBox width
-  const H        = 240;  // viewBox height
-  const cx       = W / 2; // 35 — centre x of body tube
-  const tubeW    = 14;   // width of the body tube rect
-  const tubeX    = cx - tubeW / 2; // left edge of tube
-
-  // Hole radii
-  const holeR    = 6;    // main tone holes
-  const regR     = 4;    // register/thumb hole
-
-  // Y positions — register thumb at top, then LH group, gap, RH group, bell
-  const regY     = 28;
-
-  // Left hand holes: indices 0,1,2 → LH1 (index), LH2 (middle), LH3 (ring)
-  const lhStartY = 55;
-  const lhStep   = 22;
-  const lhY      = [lhStartY, lhStartY + lhStep, lhStartY + lhStep * 2];
-
-  // Right hand holes: indices 3,4,5,6 → RH1,RH2,RH3,RH4(pinky)
-  // RH4 (pinky) is smaller and offset slightly right
-  const rhStartY  = lhY[2] + 32; // gap between LH and RH groups
-  const rhStep    = 20;
-  const rhY       = [
-    rhStartY,
-    rhStartY + rhStep,
-    rhStartY + rhStep * 2,
-    rhStartY + rhStep * 3,
-  ];
-  const pinkeyR  = 4; // smaller pinky hole
-
-  // Bell starts below RH group
-  const bellTop  = rhY[3] + 18;
-  const bellBot  = H - 6;
-
-  // ── Begin SVG ────────────────────────────────────────────────────
-  let svg = `<svg viewBox="0 0 ${W} ${H}" width="70" height="240"
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="90" height="300"
     xmlns="http://www.w3.org/2000/svg">`;
 
-  // ── Note label ───────────────────────────────────────────────────
-  const labelColor = isRoot ? '#c9a96e' : '#e8c4c4';
-  svg += `<text x="${cx}" y="14" text-anchor="middle"
+  // ── Defs ────────────────────────────────────────────────────────
+  svg += `<defs>
+    <filter id="hglow${noteName}${octave}" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  const glowId = `hglow${noteName}${octave}`;
+
+  // ── Note label ──────────────────────────────────────────────────
+  svg += `<text x="${cx}" y="12" text-anchor="middle"
     font-size="11" font-weight="600" fill="${labelColor}"
     font-family="Cormorant Garamond,serif"
     letter-spacing="0.05em">${noteName}${octave}</text>`;
 
-  // ── Body tube ────────────────────────────────────────────────────
-  // Tube runs from just below label down to bell flare
-  const tubeTopY = regY - regR - 4;
-  svg += `<rect x="${tubeX}" y="${tubeTopY}" width="${tubeW}"
-    height="${bellTop - tubeTopY}"
-    rx="4"
-    fill="rgba(30,10,55,0.6)"
-    stroke="${bodyStroke}" stroke-opacity="0.25" stroke-width="1.2"/>`;
+  // ── Body tube ───────────────────────────────────────────────────
+  svg += `<rect x="${tx}" y="${thumbY - thumbR - 6}"
+    width="${tw}" height="${bellTop - (thumbY - thumbR - 6)}"
+    rx="5" fill="rgba(20,8,40,0.7)"
+    stroke="${bodyStroke}" stroke-width="1.2"/>`;
 
-  // ── Bell flare ───────────────────────────────────────────────────
-  // Flare widens from tubeW to ~28px at the bottom
-  const flareTopW  = tubeW;
-  const flareBotW  = 28;
-  const flareTopX  = tubeX;
-  const flareBotX  = cx - flareBotW / 2;
+  // ── Bell flare ──────────────────────────────────────────────────
+  const bfw = 30; // bell bottom width
   svg += `<path d="
-    M ${flareTopX} ${bellTop}
-    L ${flareBotX} ${bellBot}
-    L ${flareBotX + flareBotW} ${bellBot}
-    L ${flareTopX + flareTopW} ${bellTop}
+    M ${tx} ${bellTop}
+    Q ${tx - 6} ${bellTop + (bellBot-bellTop)*0.5} ${cx - bfw/2} ${bellBot}
+    L ${cx + bfw/2} ${bellBot}
+    Q ${trx + 6} ${bellTop + (bellBot-bellTop)*0.5} ${trx} ${bellTop}
     Z"
-    fill="rgba(30,10,55,0.5)"
-    stroke="${bodyStroke}" stroke-opacity="0.25" stroke-width="1.2"/>`;
+    fill="rgba(20,8,40,0.6)"
+    stroke="${bodyStroke}" stroke-width="1.2"/>`;
 
-  // ── Register / thumb key ─────────────────────────────────────────
-  // Shown as a small circle to the RIGHT of the tube (thumb goes on back,
-  // but we show it on the side so it's visible). Filled = register on.
-  const regX = tubeX + tubeW + 7; // to the right
-  if (reg) {
-    svg += `<circle cx="${regX}" cy="${regY}" r="${regR}"
-      fill="${closedFill}"
-      stroke="${closedGlow}" stroke-width="1.5"
-      filter="url(#glow)"/>`;
-    // connecting line to tube
-    svg += `<line x1="${tubeX + tubeW}" y1="${regY}"
-      x2="${regX - regR}" y2="${regY}"
-      stroke="${bodyStroke}" stroke-opacity="0.3" stroke-width="1"/>`;
-    svg += `<text x="${regX + regR + 3}" y="${regY + 4}"
-      font-size="7" fill="${closedFill}" font-family="Raleway,sans-serif"
-      opacity="0.8">R</text>`;
-  } else {
-    svg += `<circle cx="${regX}" cy="${regY}" r="${regR}"
-      fill="${openFill}"
-      stroke="${openStroke}" stroke-width="1.2"/>`;
-    svg += `<line x1="${tubeX + tubeW}" y1="${regY}"
-      x2="${regX - regR}" y2="${regY}"
-      stroke="${bodyStroke}" stroke-opacity="0.2" stroke-width="1"/>`;
+  // ── Helper functions ────────────────────────────────────────────
+
+  // Draw a round tone hole (open / closed / half)
+  function toneHole(state, hx, hy, r) {
+    if (state === 'c') {
+      return `<circle cx="${hx}" cy="${hy}" r="${r}"
+        fill="${closedFill}" stroke="${closedStroke}" stroke-width="1.5"
+        filter="url(#${glowId})"/>`;
+    }
+    if (state === 'h') {
+      // Half hole: open circle with left semicircle filled
+      return `<circle cx="${hx}" cy="${hy}" r="${r}"
+          fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>
+        <path d="M ${hx} ${hy-r} A ${r} ${r} 0 0 0 ${hx} ${hy+r} Z"
+          fill="${closedFill}" stroke="none"/>`;
+    }
+    // open
+    return `<circle cx="${hx}" cy="${hy}" r="${r}"
+      fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>`;
   }
 
-  // ── Glow filter def ──────────────────────────────────────────────
-  svg += `<defs>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>`;
-
-  // ── Helper: draw one tone hole ───────────────────────────────────
-  function holeCircle(state, hx, hy, r) {
-    if (state === 'c') {
-      // Closed — filled
-      return `<circle cx="${hx}" cy="${hy}" r="${r}"
-        fill="${closedFill}"
-        stroke="${closedGlow}" stroke-width="2"
-        filter="url(#glow)"/>`;
-    } else if (state === 'h') {
-      // Half-hole — left half filled
-      return `
-        <circle cx="${hx}" cy="${hy}" r="${r}"
-          fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>
-        <path d="M ${hx} ${hy - r}
-                 A ${r} ${r} 0 0 0 ${hx} ${hy + r} Z"
-          fill="${closedFill}" stroke="none"/>`;
+  // Draw a spatula / pad key (rounded rectangle)
+  // side: 'left' extends left of tube, 'right' extends right
+  function spatKey(active, ky, side, w, h_key, label) {
+    const kx = side === 'left'
+      ? tx - w - 3          // left of tube
+      : trx + 3;            // right of tube
+    const fill   = active ? keyFill  : openFill;
+    const stroke = active ? keyStroke : openStroke;
+    let s = `<rect x="${kx}" y="${ky - h_key/2}" width="${w}" height="${h_key}"
+      rx="3" fill="${fill}" stroke="${stroke}" stroke-width="1.2"`;
+    if (active) s += ` filter="url(#${glowId})"`;
+    s += `/>`;
+    // connector line to tube
+    if (side === 'left') {
+      s += `<line x1="${kx + w}" y1="${ky}" x2="${tx}" y2="${ky}"
+        stroke="${bodyStroke}" stroke-width="0.8"/>`;
     } else {
-      // Open
-      return `<circle cx="${hx}" cy="${hy}" r="${r}"
-        fill="${openFill}"
-        stroke="${openStroke}" stroke-width="1.5"/>`;
+      s += `<line x1="${trx}" y1="${ky}" x2="${kx}" y2="${ky}"
+        stroke="${bodyStroke}" stroke-width="0.8"/>`;
+    }
+    return s;
+  }
+
+  // Draw a round side/trill key
+  function sideKey(active, kx, ky, r) {
+    const fill   = active ? keyFill  : openFill;
+    const stroke = active ? keyStroke : openStroke;
+    let s = `<circle cx="${kx}" cy="${ky}" r="${r}"
+      fill="${fill}" stroke="${stroke}" stroke-width="1.2"`;
+    if (active) s += ` filter="url(#${glowId})"`;
+    s += `/>`;
+    return s;
+  }
+
+  // ── Register key (speaker key) ──────────────────────────────────
+  // Small round key on LEFT side above LH1, representing the
+  // register/speaker key operated by left thumb (back of instrument)
+  {
+    const rkx = tx - 10;
+    const rky = regKeyY + 8;
+    svg += sideKey(reg, rkx, rky, regR);
+    svg += `<line x1="${rkx + regR}" y1="${rky}" x2="${tx}" y2="${rky}"
+      stroke="${bodyStroke}" stroke-width="0.8"/>`;
+    // label
+    svg += `<text x="${rkx - regR - 2}" y="${rky + 3}"
+      text-anchor="end" font-size="6"
+      fill="${reg ? labelColor : 'rgba(122,96,133,0.7)'}"
+      font-family="Raleway,sans-serif">reg</text>`;
+  }
+
+  // ── LH thumb (open hole, hole index 0) ─────────────────────────
+  // The thumb hole is on the back; show it as a circle left of tube
+  {
+    const thx = tx - 10;
+    svg += toneHole(h[0], thx, thumbY, thumbR);
+    svg += `<line x1="${thx + thumbR}" y1="${thumbY}" x2="${tx}" y2="${thumbY}"
+      stroke="${bodyStroke}" stroke-width="0.8"/>`;
+    svg += `<text x="${thx - thumbR - 2}" y="${thumbY + 3}"
+      text-anchor="end" font-size="6"
+      fill="rgba(122,96,133,0.7)"
+      font-family="Raleway,sans-serif">th</text>`;
+  }
+
+  // ── LH holes 1-3 (indices 1,2,3) ───────────────────────────────
+  svg += toneHole(h[1], cx, lh1Y, mainR);
+  svg += toneHole(h[2], cx, lh2Y, mainR);
+  svg += toneHole(h[3], cx, lh3Y, mainR);
+
+  // ── LH side keys cluster ────────────────────────────────────────
+  // Shown as a row of small pads on the LEFT between LH3 and RH1
+  // Keys: Eb/Ab spatula, F throat, E/B throat, F#/C# throat
+  // We space them vertically
+  {
+    const skx  = tx - 4;           // right edge of key at tube
+    const skw  = 13;
+    const skh  = 5;
+    const gap  = 7;
+    const baseY = lhSideY;
+
+    // Eb/Ab spatula (LH pinky operated)
+    {
+      const ky   = baseY;
+      const act  = lK.includes('Eb') || lK.includes('Ab');
+      svg += spatKey(act, ky, 'left', skw, skh, 'Eb');
+    }
+    // F/C throat key
+    {
+      const ky  = baseY + gap;
+      const act = lK.includes('F');
+      svg += spatKey(act, ky, 'left', skw - 2, skh, 'F');
+    }
+    // E/B throat key
+    {
+      const ky  = baseY + gap * 2;
+      const act = lK.includes('E');
+      svg += spatKey(act, ky, 'left', skw - 2, skh, 'E');
+    }
+    // F#/C# throat key
+    {
+      const ky  = baseY + gap * 3;
+      const act = lK.includes('Fsharp');
+      svg += spatKey(act, ky, 'left', skw, skh, 'F#');
     }
   }
 
-  // ── LH holes (indices 0-2) ───────────────────────────────────────
-  // Centred on tube
-  for (let i = 0; i < 3; i++) {
-    svg += holeCircle(h[i], cx, lhY[i], holeR);
+  // ── RH holes 1-3 (indices 4,5,6) ───────────────────────────────
+  svg += toneHole(h[4], cx, rh1Y, mainR);
+  svg += toneHole(h[5], cx, rh2Y, mainR);
+  svg += toneHole(h[6], cx, rh3Y, mainR);
+
+  // ── RH side keys cluster ────────────────────────────────────────
+  // Shown on the RIGHT side below RH3
+  // Keys: F#/C# side trill, B/F# trill, Bb/Eb side key
+  {
+    const skw  = 13;
+    const skh  = 5;
+    const gap  = 7;
+    const baseY = rhSideY;
+
+    // Bb/Eb side key (RH pinky area, left side of RH)
+    {
+      const ky  = baseY;
+      const act = rK.includes('Bb');
+      svg += spatKey(act, ky, 'right', skw, skh, 'Bb');
+    }
+    // F#/C# side trill (RH)
+    {
+      const ky  = baseY + gap;
+      const act = rK.includes('Fsharp');
+      svg += spatKey(act, ky, 'right', skw, skh, 'F#');
+    }
+    // B/F# trill key
+    {
+      const ky  = baseY + gap * 2;
+      const act = rK.includes('B');
+      svg += spatKey(act, ky, 'right', skw, skh, 'B');
+    }
   }
 
-  // ── RH holes (indices 3-5, normal size; index 6, pinky) ─────────
-  for (let i = 3; i <= 5; i++) {
-    svg += holeCircle(h[i], cx, rhY[i - 3], holeR);
-  }
-  // Pinky hole (index 6) — smaller, offset slightly right
-  if (h[6] !== undefined) {
-    const pinkeyX = cx + 4;
-    svg += holeCircle(h[6], pinkeyX, rhY[3], pinkeyR);
+  // ── RH4 area — h[7] ────────────────────────────────────────────
+  // The low E/B - F/C spatula keys for RH pinky
+  // Shown as two small spatula pads on LEFT side at bottom
+  {
+    const ky1 = rhSideY + 5;
+    const ky2 = rhSideY + 13;
+    // h[7] controls both; 'c' = low F/C key down (E3/F3 range)
+    const act = h[7] === 'c';
+    svg += spatKey(act,  ky1, 'left', 11, 5, 'F/C');
+    svg += spatKey(false, ky2, 'left', 11, 5, 'E/B');
   }
 
-  // ── LH / RH group labels ─────────────────────────────────────────
-  svg += `<text x="${tubeX - 5}" y="${lhY[1] + 4}"
-    text-anchor="end" font-size="7"
-    fill="${bodyStroke}" opacity="0.45"
+  // ── Group labels ─────────────────────────────────────────────────
+  svg += `<text x="${cx + tw/2 + 3}" y="${lh2Y + 4}"
+    font-size="7" fill="rgba(155,127,199,0.5)"
     font-family="Raleway,sans-serif">L</text>`;
-  svg += `<text x="${tubeX - 5}" y="${rhY[1] + 4}"
-    text-anchor="end" font-size="7"
-    fill="${bodyStroke}" opacity="0.45"
+  svg += `<text x="${cx + tw/2 + 3}" y="${rh2Y + 4}"
+    font-size="7" fill="rgba(155,127,199,0.5)"
     font-family="Raleway,sans-serif">R</text>`;
 
   svg += `</svg>`;
@@ -2422,17 +2829,23 @@ function buildFingerings(chordNotes, rootNote, instrumentInfo) {
 
   const legend = document.createElement('div');
   legend.className = 'fingering-legend';
+  // Updated legend in buildFingerings():
   legend.innerHTML = `
     <span class="fleg-item">
-      <span class="fleg-dot closed"></span> closed
+      <span class="fleg-dot closed"></span> closed hole
     </span>
     <span class="fleg-item">
-      <span class="fleg-dot open"></span> open
+      <span class="fleg-dot open"></span> open hole
     </span>
     <span class="fleg-item">
-      <span class="fleg-reg"></span> register key (R)
+      <span class="fleg-key"></span> side/spatula key (pressed)
     </span>
-    <span class="fleg-root">gold = root note</span>
+    <span class="fleg-item">
+      <span class="fleg-reg" style="opacity:0.4"></span> register key (off)
+    </span>
+    <span class="fleg-root" style="margin-left:auto">
+      gold = root note
+    </span>
   `;
   container.after(legend);
 }
