@@ -2196,11 +2196,9 @@ select option {
   background: rgba(255,255,255,0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  /* was padding: 0.5rem 0.4rem — give a little more room */
-  padding: 0.6rem 0.5rem 0.5rem;
+  padding: 0.5rem 0.3rem 0.4rem;
   transition: var(--transition);
-  /* fixed width so cards don't squish */
-  width: 80px;
+  width: 90px;
   flex-shrink: 0;
 }
 
@@ -2209,21 +2207,12 @@ select option {
   background: rgba(183,110,121,0.05);
 }
 
-/* Make the container scroll horizontally if too many notes */
-#piano {
-  min-height: 100px;
-  position: relative;
-  /* override whatever JS sets so scroll works */
-  overflow-x: auto !important;
-  flex-wrap: nowrap !important;
-}
-
 .fingering-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.75rem;
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 0.9rem;
   background: rgba(255,255,255,0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -2231,6 +2220,7 @@ select option {
   color: var(--text-muted);
   letter-spacing: 0.04em;
   width: 100%;
+  align-items: center;
 }
 
 .fleg-item {
