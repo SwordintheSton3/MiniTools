@@ -2051,63 +2051,119 @@ console.log('parse test:',     parseChord('Cm7'));
 // WOODWIND FINGERING SYSTEM
 // ═══════════════════════════════════════
 const CLARINET_FINGERINGS = {
-  // ── Chalumeau register ──
+  // ── Chalumeau register (register key OFF) ──
+
+  // E3: All main holes closed, throat keys closed
   'E3':  { holes:['c','c','c','c','c','c','c','c'], lKeys:[], rKeys:[], register:false },
+
+  // F3: RH4 open
   'F3':  { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:false },
+
+  // F#3/Gb3: RH3 open, RH4 closed
   'F#3': { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:false },
   'Gb3': { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:false },
+
+  // G3: RH3 and RH4 open
   'G3':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:false },
-  'G#3': { holes:['c','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'Ab3': { holes:['c','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'A3':  { holes:['c','c','c','c','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'Bb3': { holes:['c','c','c','c','o','c','o','o'], lKeys:[], rKeys:[], register:false },
-  'A#3': { holes:['c','c','c','c','o','c','o','o'], lKeys:[], rKeys:[], register:false },
-  'B3':  { holes:['c','c','c','c','c','c','o','o'], lKeys:['Bb'], rKeys:[], register:false },
-  'C4':  { holes:['c','c','c','o','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'C#4': { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'Db4': { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'D4':  { holes:['c','c','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'D#4': { holes:['c','c','o','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'Eb4': { holes:['c','c','o','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'E4':  { holes:['c','o','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'F4':  { holes:['o','o','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'F#4': { holes:['c','c','c','c','c','o','c','o'], lKeys:[], rKeys:['Fsharp'], register:false },
-  'Gb4': { holes:['c','c','c','c','c','o','c','o'], lKeys:[], rKeys:['Fsharp'], register:false },
-  'G4':  { holes:['o','c','c','c','c','o','o','o'], lKeys:[], rKeys:[], register:false },
-  'G#4': { holes:['o','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  'Ab4': { holes:['o','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
-  // ── Clarion register ──
-  'A4':  { holes:['c','c','c','c','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'Bb4': { holes:['c','c','c','c','o','c','o','o'], lKeys:[], rKeys:[], register:true },
-  'A#4': { holes:['c','c','c','c','o','c','o','o'], lKeys:[], rKeys:[], register:true },
-  'B4':  { holes:['c','c','c','c','c','c','o','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'C5':  { holes:['c','c','c','o','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'C#5': { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'Db5': { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'D5':  { holes:['c','c','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'D#5': { holes:['c','c','o','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'Eb5': { holes:['c','c','o','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'E5':  { holes:['c','o','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'F5':  { holes:['o','o','o','o','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'F#5': { holes:['c','c','c','c','c','o','c','o'], lKeys:[], rKeys:['Fsharp'], register:true },
-  'Gb5': { holes:['c','c','c','c','c','o','c','o'], lKeys:[], rKeys:['Fsharp'], register:true },
-  'G5':  { holes:['o','c','c','c','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'G#5': { holes:['o','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
-  'Ab5': { holes:['o','c','c','c','c','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
-  'A5':  { holes:['c','c','c','c','c','o','o','o'], lKeys:[], rKeys:[], register:true },
-  'Bb5': { holes:['c','c','c','o','c','c','c','c'], lKeys:['Bb'], rKeys:[], register:true },
-  'A#5': { holes:['c','c','c','o','c','c','c','c'], lKeys:['Bb'], rKeys:[], register:true },
-  'B5':  { holes:['c','c','c','c','c','c','c','o'], lKeys:['Bb'], rKeys:[], register:true },
-  'C6':  { holes:['c','c','c','c','c','c','c','c'], lKeys:[], rKeys:[], register:true },
+
+  // G#3/Ab3: G3 fingering + side G# key
+  'G#3': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  'Ab3': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+
+  // A3: LH1+LH2+LH3+RH1 closed, RH2+RH3+RH4 open
+  'A3':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // Bb3/A#3: A3 fingering + side Bb key (long Bb)
+  'Bb3': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:false },
+  'A#3': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:false },
+
+  // B3: LH1+LH2+LH3 closed, RH1 open, rest open
+  'B3':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // C4: LH1+LH2 closed, rest open (throat C)
+  'C4':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // C#4/Db4: LH1 only closed (throat C#)
+  'C#4': { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+  'Db4': { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // D4: all open, use side trill key or standard
+  // Standard D4: LH1+LH2+LH3 + RH1+RH2+RH3 closed (fork fingering)
+  'D4':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:false },
+  // Note: D4 is typically played with register key OFF using the same fingering as D5 but no register
+
+  // D#4/Eb4: Like D4 but add Eb/D# side key
+  'D#4': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  'Eb4': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+
+  // E4: LH1+LH2+LH3+RH1 closed, RH2+ open
+  'E4':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // F4: LH1+LH2+LH3 closed, all RH open
+  'F4':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // F#4/Gb4: F4 + side F# key
+  'F#4': { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:false },
+  'Gb4': { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:false },
+
+  // G4: LH1+LH2 closed, rest open
+  'G4':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:false },
+
+  // G#4/Ab4: LH1 closed + G# key
+  'G#4': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+  'Ab4': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:false },
+
+  // ── Clarion register (register key ON) ──
+  // These mirror the chalumeau fingerings but with register:true
+  // The register key (thumb hole vented) raises pitch a 12th
+
+  'A4':  { holes:['c','c','c','c','c','c','c','c'], lKeys:[], rKeys:[], register:true },
+  'Bb4': { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:true },
+  'A#4': { holes:['c','c','c','c','c','c','c','o'], lKeys:[], rKeys:[], register:true },
+  'B4':  { holes:['c','c','c','c','c','c','o','c'], lKeys:[], rKeys:[], register:true },
+  'C5':  { holes:['c','c','c','c','c','c','o','o'], lKeys:[], rKeys:[], register:true },
+  'C#5': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
+  'Db5': { holes:['c','c','c','c','c','c','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
+  'D5':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  'D#5': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
+  'Eb5': { holes:['c','c','c','c','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
+  'E5':  { holes:['c','c','c','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  'F5':  { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  'F#5': { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:true },
+  'Gb5': { holes:['c','c','o','o','o','o','o','o'], lKeys:[], rKeys:['Fsharp'], register:true },
+  'G5':  { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  'G#5': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
+  'Ab5': { holes:['c','o','o','o','o','o','o','o'], lKeys:['Gsharp'], rKeys:[], register:true },
+
+  // Upper clarion / altissimo begins around A5
+  'A5':  { holes:['c','c','c','c','o','o','o','o'], lKeys:[], rKeys:[], register:true },
+  'Bb5': { holes:['c','c','c','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
+  'A#5': { holes:['c','c','c','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
+  'B5':  { holes:['c','c','o','o','o','o','o','o'], lKeys:['Bb'], rKeys:[], register:true },
+  'C6':  { holes:['c','o','o','o','o','o','o','o'], lKeys:[], rKeys:[], register:true },
 };
 
 function getFingering(noteName, octave) {
+  // Try exact match first
   const key = noteName + octave;
   if (CLARINET_FINGERINGS[key]) return CLARINET_FINGERINGS[key];
+  
+  // Try enharmonic equivalent at same octave
   const enh = ENHARMONIC[noteName];
-  if (enh && CLARINET_FINGERINGS[enh + octave]) return CLARINET_FINGERINGS[enh + octave];
-  if (CLARINET_FINGERINGS[noteName + (octave + 1)]) return CLARINET_FINGERINGS[noteName + (octave + 1)];
-  if (CLARINET_FINGERINGS[noteName + (octave - 1)]) return CLARINET_FINGERINGS[noteName + (octave - 1)];
+  if (enh && CLARINET_FINGERINGS[enh + octave]) 
+    return CLARINET_FINGERINGS[enh + octave];
+  
+  // Try adjacent octaves only as last resort
+  // (avoids showing wildly wrong fingerings)
+  for (const delta of [1, -1]) {
+    const alt = noteName + (octave + delta);
+    if (CLARINET_FINGERINGS[alt]) return CLARINET_FINGERINGS[alt];
+    if (enh) {
+      const altEnh = enh + (octave + delta);
+      if (CLARINET_FINGERINGS[altEnh]) return CLARINET_FINGERINGS[altEnh];
+    }
+  }
+  
   return null;
 }
 
@@ -2133,94 +2189,178 @@ function isWoodwind() {
 
 function drawClarinetSVG(fingering, noteName, octave, isRoot, isSax) {
   if (!fingering) {
-    return `<svg viewBox="0 0 80 220" width="80" height="220" xmlns="http://www.w3.org/2000/svg">
-      <rect x="5" y="5" width="70" height="210" rx="6" fill="none"
+    return `<svg viewBox="0 0 70 240" width="70" height="240" 
+      xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="62" height="232" rx="6" fill="none"
         stroke="rgba(183,110,121,0.2)" stroke-width="1"/>
-      <text x="40" y="115" text-anchor="middle" font-size="10"
+      <text x="35" y="125" text-anchor="middle" font-size="9"
         fill="#7a6085" font-family="Raleway,sans-serif">no fingering</text>
     </svg>`;
   }
 
-  const h           = fingering.holes;
-  const reg         = fingering.register;
+  const h          = fingering.holes; // [LH1, LH2, LH3, RH1, RH2, RH3, RH4(pinky)]
+  const reg        = fingering.register;
+  const isSaxFlag  = isSax;
+
+  // Colours depending on root vs chord tone
   const closedFill  = isRoot ? '#c9a96e' : '#b76e79';
-  const closedGlow  = isRoot ? 'rgba(201,169,110,0.5)' : 'rgba(183,110,121,0.5)';
-  const openFill    = 'rgba(255,255,255,0.06)';
-  const openStroke  = isRoot ? 'rgba(201,169,110,0.6)' : 'rgba(183,110,121,0.4)';
-  const bodyColor   = isSax ? '#c9a96e' : '#b8a0c8';
-  const bodyOpacity = '0.12';
+  const closedGlow  = isRoot ? 'rgba(201,169,110,0.55)' : 'rgba(183,110,121,0.55)';
+  const openFill    = 'rgba(255,255,255,0.05)';
+  const openStroke  = isRoot ? 'rgba(201,169,110,0.5)' : 'rgba(183,110,121,0.35)';
+  const bodyStroke  = isSaxFlag ? '#c9a96e' : '#9b7fc7';
 
-  const holeY = [28, 58, 72, 86, 105, 119, 133, 147];
-  const holeR = [5,   7,  7,  7,   7,   7,   7,   7];
-  const cx    = 40;
+  // Layout constants
+  const W        = 70;   // viewBox width
+  const H        = 240;  // viewBox height
+  const cx       = W / 2; // 35 — centre x of body tube
+  const tubeW    = 14;   // width of the body tube rect
+  const tubeX    = cx - tubeW / 2; // left edge of tube
 
-  let svg = `<svg viewBox="0 0 80 220" width="80" height="220" xmlns="http://www.w3.org/2000/svg">`;
+  // Hole radii
+  const holeR    = 6;    // main tone holes
+  const regR     = 4;    // register/thumb hole
 
+  // Y positions — register thumb at top, then LH group, gap, RH group, bell
+  const regY     = 28;
+
+  // Left hand holes: indices 0,1,2 → LH1 (index), LH2 (middle), LH3 (ring)
+  const lhStartY = 55;
+  const lhStep   = 22;
+  const lhY      = [lhStartY, lhStartY + lhStep, lhStartY + lhStep * 2];
+
+  // Right hand holes: indices 3,4,5,6 → RH1,RH2,RH3,RH4(pinky)
+  // RH4 (pinky) is smaller and offset slightly right
+  const rhStartY  = lhY[2] + 32; // gap between LH and RH groups
+  const rhStep    = 20;
+  const rhY       = [
+    rhStartY,
+    rhStartY + rhStep,
+    rhStartY + rhStep * 2,
+    rhStartY + rhStep * 3,
+  ];
+  const pinkeyR  = 4; // smaller pinky hole
+
+  // Bell starts below RH group
+  const bellTop  = rhY[3] + 18;
+  const bellBot  = H - 6;
+
+  // ── Begin SVG ────────────────────────────────────────────────────
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="70" height="240"
+    xmlns="http://www.w3.org/2000/svg">`;
+
+  // ── Note label ───────────────────────────────────────────────────
   const labelColor = isRoot ? '#c9a96e' : '#e8c4c4';
-  svg += `<text x="40" y="13" text-anchor="middle" font-size="11" font-weight="600"
-    fill="${labelColor}" font-family="Cormorant Garamond,serif"
+  svg += `<text x="${cx}" y="14" text-anchor="middle"
+    font-size="11" font-weight="600" fill="${labelColor}"
+    font-family="Cormorant Garamond,serif"
     letter-spacing="0.05em">${noteName}${octave}</text>`;
 
-  svg += `<rect x="32" y="22" width="16" height="175" rx="4"
-    fill="${bodyColor}" fill-opacity="${bodyOpacity}"
-    stroke="${bodyColor}" stroke-opacity="0.3" stroke-width="1"/>`;
+  // ── Body tube ────────────────────────────────────────────────────
+  // Tube runs from just below label down to bell flare
+  const tubeTopY = regY - regR - 4;
+  svg += `<rect x="${tubeX}" y="${tubeTopY}" width="${tubeW}"
+    height="${bellTop - tubeTopY}"
+    rx="4"
+    fill="rgba(30,10,55,0.6)"
+    stroke="${bodyStroke}" stroke-opacity="0.25" stroke-width="1.2"/>`;
 
-  svg += `<path d="M26 190 Q20 210 30 215 L50 215 Q60 210 54 190 Z"
-    fill="${bodyColor}" fill-opacity="${bodyOpacity}"
-    stroke="${bodyColor}" stroke-opacity="0.25" stroke-width="1"/>`;
+  // ── Bell flare ───────────────────────────────────────────────────
+  // Flare widens from tubeW to ~28px at the bottom
+  const flareTopW  = tubeW;
+  const flareBotW  = 28;
+  const flareTopX  = tubeX;
+  const flareBotX  = cx - flareBotW / 2;
+  svg += `<path d="
+    M ${flareTopX} ${bellTop}
+    L ${flareBotX} ${bellBot}
+    L ${flareBotX + flareBotW} ${bellBot}
+    L ${flareTopX + flareTopW} ${bellTop}
+    Z"
+    fill="rgba(30,10,55,0.5)"
+    stroke="${bodyStroke}" stroke-opacity="0.25" stroke-width="1.2"/>`;
 
-  // Left side keys
-  if (fingering.lKeys.includes('Gsharp')) {
-    svg += `<rect x="14" y="68" width="14" height="7" rx="3"
-      fill="${closedFill}" stroke="none" opacity="0.9"/>`;
-  } else {
-    svg += `<rect x="14" y="68" width="14" height="7" rx="3"
-      fill="none" stroke="${openStroke}" stroke-width="1"/>`;
-  }
-
-  if (fingering.lKeys.includes('Bb')) {
-    svg += `<rect x="14" y="100" width="14" height="7" rx="3"
-      fill="${closedFill}" stroke="none" opacity="0.9"/>`;
-  } else {
-    svg += `<rect x="14" y="100" width="14" height="7" rx="3"
-      fill="none" stroke="${openStroke}" stroke-width="1"/>`;
-  }
-
-  // Right side key
-  if (fingering.rKeys.includes('Fsharp')) {
-    svg += `<rect x="52" y="100" width="14" height="7" rx="3"
-      fill="${closedFill}" stroke="none" opacity="0.9"/>`;
-  } else {
-    svg += `<rect x="52" y="100" width="14" height="7" rx="3"
-      fill="none" stroke="${openStroke}" stroke-width="1"/>`;
-  }
-
-  // Register key
+  // ── Register / thumb key ─────────────────────────────────────────
+  // Shown as a small circle to the RIGHT of the tube (thumb goes on back,
+  // but we show it on the side so it's visible). Filled = register on.
+  const regX = tubeX + tubeW + 7; // to the right
   if (reg) {
-    svg += `<rect x="52" y="22" width="10" height="8" rx="2"
-      fill="${closedFill}" opacity="0.9" stroke="none"/>`;
+    svg += `<circle cx="${regX}" cy="${regY}" r="${regR}"
+      fill="${closedFill}"
+      stroke="${closedGlow}" stroke-width="1.5"
+      filter="url(#glow)"/>`;
+    // connecting line to tube
+    svg += `<line x1="${tubeX + tubeW}" y1="${regY}"
+      x2="${regX - regR}" y2="${regY}"
+      stroke="${bodyStroke}" stroke-opacity="0.3" stroke-width="1"/>`;
+    svg += `<text x="${regX + regR + 3}" y="${regY + 4}"
+      font-size="7" fill="${closedFill}" font-family="Raleway,sans-serif"
+      opacity="0.8">R</text>`;
   } else {
-    svg += `<rect x="52" y="22" width="10" height="8" rx="2"
-      fill="none" stroke="${openStroke}" stroke-width="1"/>`;
+    svg += `<circle cx="${regX}" cy="${regY}" r="${regR}"
+      fill="${openFill}"
+      stroke="${openStroke}" stroke-width="1.2"/>`;
+    svg += `<line x1="${tubeX + tubeW}" y1="${regY}"
+      x2="${regX - regR}" y2="${regY}"
+      stroke="${bodyStroke}" stroke-opacity="0.2" stroke-width="1"/>`;
   }
 
-  // Tone holes
-  h.forEach((state, i) => {
-    const y = holeY[i];
-    const r = holeR[i];
+  // ── Glow filter def ──────────────────────────────────────────────
+  svg += `<defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  // ── Helper: draw one tone hole ───────────────────────────────────
+  function holeCircle(state, hx, hy, r) {
     if (state === 'c') {
-      svg += `<circle cx="${cx}" cy="${y}" r="${r}"
-        fill="${closedFill}" stroke="${closedGlow}" stroke-width="2"/>`;
+      // Closed — filled
+      return `<circle cx="${hx}" cy="${hy}" r="${r}"
+        fill="${closedFill}"
+        stroke="${closedGlow}" stroke-width="2"
+        filter="url(#glow)"/>`;
     } else if (state === 'h') {
-      svg += `<circle cx="${cx}" cy="${y}" r="${r}"
-        fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>`;
-      svg += `<path d="M${cx} ${y - r} A${r} ${r} 0 0 0 ${cx} ${y + r} Z"
-        fill="${closedFill}" stroke="none"/>`;
+      // Half-hole — left half filled
+      return `
+        <circle cx="${hx}" cy="${hy}" r="${r}"
+          fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>
+        <path d="M ${hx} ${hy - r}
+                 A ${r} ${r} 0 0 0 ${hx} ${hy + r} Z"
+          fill="${closedFill}" stroke="none"/>`;
     } else {
-      svg += `<circle cx="${cx}" cy="${y}" r="${r}"
-        fill="${openFill}" stroke="${openStroke}" stroke-width="1.5"/>`;
+      // Open
+      return `<circle cx="${hx}" cy="${hy}" r="${r}"
+        fill="${openFill}"
+        stroke="${openStroke}" stroke-width="1.5"/>`;
     }
-  });
+  }
+
+  // ── LH holes (indices 0-2) ───────────────────────────────────────
+  // Centred on tube
+  for (let i = 0; i < 3; i++) {
+    svg += holeCircle(h[i], cx, lhY[i], holeR);
+  }
+
+  // ── RH holes (indices 3-5, normal size; index 6, pinky) ─────────
+  for (let i = 3; i <= 5; i++) {
+    svg += holeCircle(h[i], cx, rhY[i - 3], holeR);
+  }
+  // Pinky hole (index 6) — smaller, offset slightly right
+  if (h[6] !== undefined) {
+    const pinkeyX = cx + 4;
+    svg += holeCircle(h[6], pinkeyX, rhY[3], pinkeyR);
+  }
+
+  // ── LH / RH group labels ─────────────────────────────────────────
+  svg += `<text x="${tubeX - 5}" y="${lhY[1] + 4}"
+    text-anchor="end" font-size="7"
+    fill="${bodyStroke}" opacity="0.45"
+    font-family="Raleway,sans-serif">L</text>`;
+  svg += `<text x="${tubeX - 5}" y="${rhY[1] + 4}"
+    text-anchor="end" font-size="7"
+    fill="${bodyStroke}" opacity="0.45"
+    font-family="Raleway,sans-serif">R</text>`;
 
   svg += `</svg>`;
   return svg;
@@ -2233,25 +2373,41 @@ function buildFingerings(chordNotes, rootNote, instrumentInfo) {
     height: auto;
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    justify-content: flex-start;
     align-items: flex-end;
-    padding: 0.5rem 0;
+    padding: 0.5rem 0.25rem 0.75rem;
     filter: none;
+    -webkit-overflow-scrolling: touch;
   `;
+  // centre if few enough notes to fit
+  const totalW = chordNotes.length * 90;
+  if (totalW < 650) {
+    container.style.justifyContent = 'center';
+  }
 
   const isSax = instrumentInfo.label.toLowerCase().includes('sax');
 
   chordNotes.forEach(note => {
+    // Determine the best octave to show for this note
+    // Clarinet written range: E3–C6 (sounding a M2 lower for Bb clarinet)
+    // We pick octave based on note name — keep notes in mid range
+    let octave = 4;
     const noteIdx = getNoteIndex(note);
-    let octave    = instrumentInfo.defaultOct;
-    if (['G','G#','Ab','A','A#','Bb','B'].includes(note))            octave = 3;
-    if (['C','C#','Db','D','D#','Eb','E','F','F#','Gb'].includes(note)) octave = 4;
+
+    // Notes that naturally sit in chalumeau (lower) octave:
+    // E F F# G G# A Bb B → octave 3
+    // C C# D D# onwards → octave 4 in chalumeau, or octave 5 in clarion
+    // For display we just show one representative fingering per note
+    const lowerNotes = ['E','F','F#','Gb','G','G#','Ab','A','A#','Bb','B'];
+    if (lowerNotes.includes(note)) octave = 3;
+    else octave = 4;
 
     const fingering = getFingering(note, octave)
-      || getFingering(note, octave + 1)
-      || getFingering(note, octave - 1);
+                   || getFingering(note, octave + 1)
+                   || getFingering(note, octave - 1);
 
     const isRoot  = getNoteIndex(note) === getNoteIndex(rootNote);
     const wrapper = document.createElement('div');
@@ -2260,13 +2416,22 @@ function buildFingerings(chordNotes, rootNote, instrumentInfo) {
     container.appendChild(wrapper);
   });
 
+  // Remove old legend if any
+  const oldLegend = document.querySelector('.fingering-legend');
+  if (oldLegend) oldLegend.remove();
+
   const legend = document.createElement('div');
   legend.className = 'fingering-legend';
   legend.innerHTML = `
-    <span class="fleg-item"><span class="fleg-dot closed"></span> closed</span>
-    <span class="fleg-item"><span class="fleg-dot open"></span> open</span>
-    <span class="fleg-item"><span class="fleg-key"></span> side key</span>
-    <span class="fleg-item"><span class="fleg-reg"></span> register key</span>
+    <span class="fleg-item">
+      <span class="fleg-dot closed"></span> closed
+    </span>
+    <span class="fleg-item">
+      <span class="fleg-dot open"></span> open
+    </span>
+    <span class="fleg-item">
+      <span class="fleg-reg"></span> register key (R)
+    </span>
     <span class="fleg-root">gold = root note</span>
   `;
   container.after(legend);
